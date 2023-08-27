@@ -45,3 +45,4 @@
 [submodule "third_party/abseil-cpp"]
 	path = third_party/abseil-cpp
 	url = https://github.com/inworld-ai/inworld-ndk-abseil-cpp
+	branch = inworld-main
