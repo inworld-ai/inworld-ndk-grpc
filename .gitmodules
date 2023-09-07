@@ -5,9 +5,6 @@
 	# generated file that makes Git consider the submodule dirty. This
 	# state can be ignored for day-to-day development on gRPC.
 	ignore = dirty
-[submodule "third_party/protobuf"]
-	path = third_party/protobuf
-	url = https://github.com/google/protobuf.git
 [submodule "third_party/googletest"]
 	path = third_party/googletest
 	url = https://github.com/google/googletest.git
@@ -45,4 +42,8 @@
 [submodule "third_party/abseil-cpp"]
 	path = third_party/abseil-cpp
 	url = https://github.com/inworld-ai/inworld-ndk-abseil-cpp
+	branch = inworld-main
+[submodule "third_party/protobuf"]
+	path = third_party/protobuf
+	url = https://github.com/inworld-ai/inworld-ndk-protobuf.git
 	branch = inworld-main
