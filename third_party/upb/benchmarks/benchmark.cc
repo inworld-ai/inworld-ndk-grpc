@@ -12,7 +12,7 @@
 #include "upb/def.hpp"
 
 upb_strview descriptor = benchmarks_descriptor_proto_upbdefinit.descriptor;
-namespace protobuf = ::google::protobuf;
+namespace protobuf_inworld = ::google::protobuf_inworld;
 
 /* A buffer big enough to parse descriptor.proto without going to heap. */
 char buf[65535];
@@ -70,12 +70,12 @@ BENCHMARK(BM_LoadAdsDescriptor_Upb);
 
 static void BM_LoadDescriptor_Proto2(benchmark::State& state) {
   for (auto _ : state) {
-    protobuf::Arena arena;
-    protobuf::StringPiece input(descriptor.data,descriptor.size);
-    auto proto = protobuf::Arena::CreateMessage<protobuf::FileDescriptorProto>(
+    protobuf_inworld::Arena arena;
+    protobuf_inworld::StringPiece input(descriptor.data,descriptor.size);
+    auto proto = protobuf_inworld::Arena::CreateMessage<protobuf_inworld::FileDescriptorProto>(
         &arena);
-    protobuf::DescriptorPool pool;
-    bool ok = proto->ParseFrom<protobuf::MessageLite::kMergePartial>(input) &&
+    protobuf_inworld::DescriptorPool pool;
+    bool ok = proto->ParseFrom<protobuf_inworld::MessageLite::kMergePartial>(input) &&
               pool.BuildFile(*proto) != nullptr;
     if (!ok) {
       printf("Failed to add file.\n");
@@ -96,13 +96,13 @@ static void BM_LoadAdsDescriptor_Proto2(benchmark::State& state) {
   size_t bytes_per_iter = 0;
   for (auto _ : state) {
     bytes_per_iter = 0;
-    protobuf::Arena arena;
-    protobuf::DescriptorPool pool;
+    protobuf_inworld::Arena arena;
+    protobuf_inworld::DescriptorPool pool;
     for (auto file : serialized_files) {
-      protobuf::StringPiece input(file.data, file.size);
-      auto proto = protobuf::Arena::CreateMessage<protobuf::FileDescriptorProto>(
+      protobuf_inworld::StringPiece input(file.data, file.size);
+      auto proto = protobuf_inworld::Arena::CreateMessage<protobuf_inworld::FileDescriptorProto>(
           &arena);
-      bool ok = proto->ParseFrom<protobuf::MessageLite::kMergePartial>(input) &&
+      bool ok = proto->ParseFrom<protobuf_inworld::MessageLite::kMergePartial>(input) &&
                 pool.BuildFile(*proto) != nullptr;
       if (!ok) {
         printf("Failed to add file.\n");
@@ -169,27 +169,27 @@ struct Proto2Factory<NoArena, P> {
 template <class P>
 struct Proto2Factory<UseArena, P> {
  public:
-  P* GetProto() { return protobuf::Arena::CreateMessage<P>(&arena_); }
+  P* GetProto() { return protobuf_inworld::Arena::CreateMessage<P>(&arena_); }
 
  private:
-  protobuf::Arena arena_;
+  protobuf_inworld::Arena arena_;
 };
 
 template <class P>
 struct Proto2Factory<InitBlock, P> {
  public:
   Proto2Factory() : arena_(GetOptions()) {}
-  P* GetProto() { return protobuf::Arena::CreateMessage<P>(&arena_); }
+  P* GetProto() { return protobuf_inworld::Arena::CreateMessage<P>(&arena_); }
 
  private:
-  protobuf::ArenaOptions GetOptions() {
-    protobuf::ArenaOptions opts;
+  protobuf_inworld::ArenaOptions GetOptions() {
+    protobuf_inworld::ArenaOptions opts;
     opts.initial_block = buf;
     opts.initial_block_size = sizeof(buf);
     return opts;
   }
 
-  protobuf::Arena arena_;
+  protobuf_inworld::Arena arena_;
 };
 
 using FileDesc = ::upb_benchmark::FileDescriptorProto;
@@ -198,14 +198,14 @@ using FileDescSV = ::upb_benchmark::sv::FileDescriptorProto;
 template <class P, ArenaMode AMode, CopyStrings kCopy>
 void BM_Parse_Proto2(benchmark::State& state) {
   size_t bytes = 0;
-  constexpr protobuf::MessageLite::ParseFlags kParseFlags =
+  constexpr protobuf_inworld::MessageLite::ParseFlags kParseFlags =
       kCopy == Copy
-          ? protobuf::MessageLite::ParseFlags::kMergePartial
-          : protobuf::MessageLite::ParseFlags::kMergePartialWithAliasing;
+          ? protobuf_inworld::MessageLite::ParseFlags::kMergePartial
+          : protobuf_inworld::MessageLite::ParseFlags::kMergePartialWithAliasing;
   for (auto _ : state) {
     Proto2Factory<AMode, P> proto_factory;
     auto proto = proto_factory.GetProto();
-    protobuf::StringPiece input(descriptor.data,descriptor.size);
+    protobuf_inworld::StringPiece input(descriptor.data,descriptor.size);
     bool ok = proto->template ParseFrom<kParseFlags>(input);
     if (!ok) {
       printf("Failed to parse.\n");

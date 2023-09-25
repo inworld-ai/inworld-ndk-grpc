@@ -125,7 +125,7 @@ inline std::string LowerUnderscoreToUpperCamel(std::string str) {
 }
 
 inline std::string FileNameInUpperCamel(
-    const grpc::protobuf::FileDescriptor* file, bool include_package_path) {
+    const grpc::protobuf_inworld::FileDescriptor* file, bool include_package_path) {
   std::vector<std::string> tokens = tokenize(StripProto(file->name()), "/");
   std::string result = "";
   if (include_package_path) {
@@ -138,7 +138,7 @@ inline std::string FileNameInUpperCamel(
 }
 
 inline std::string FileNameInUpperCamel(
-    const grpc::protobuf::FileDescriptor* file) {
+    const grpc::protobuf_inworld::FileDescriptor* file) {
   return FileNameInUpperCamel(file, true);
 }
 
@@ -150,7 +150,7 @@ enum MethodType {
 };
 
 inline MethodType GetMethodType(
-    const grpc::protobuf::MethodDescriptor* method) {
+    const grpc::protobuf_inworld::MethodDescriptor* method) {
   if (method->client_streaming()) {
     if (method->server_streaming()) {
       return METHODTYPE_BIDI_STREAMING;
@@ -185,7 +185,7 @@ enum CommentType {
 template <typename DescriptorType>
 inline void GetComment(const DescriptorType* desc, CommentType type,
                        std::vector<std::string>* out) {
-  grpc::protobuf::SourceLocation location;
+  grpc::protobuf_inworld::SourceLocation location;
   if (!desc->GetSourceLocation(&location)) {
     return;
   }
@@ -210,14 +210,14 @@ inline void GetComment(const DescriptorType* desc, CommentType type,
 // For file level leading and detached leading comments, we return comments
 // above syntax line. Return nothing for trailing comments.
 template <>
-inline void GetComment(const grpc::protobuf::FileDescriptor* desc,
+inline void GetComment(const grpc::protobuf_inworld::FileDescriptor* desc,
                        CommentType type, std::vector<std::string>* out) {
   if (type == COMMENTTYPE_TRAILING) {
     return;
   }
-  grpc::protobuf::SourceLocation location;
+  grpc::protobuf_inworld::SourceLocation location;
   std::vector<int> path;
-  path.push_back(grpc::protobuf::FileDescriptorProto::kSyntaxFieldNumber);
+  path.push_back(grpc::protobuf_inworld::FileDescriptorProto::kSyntaxFieldNumber);
   if (!desc->GetSourceLocation(path, &location)) {
     return;
   }

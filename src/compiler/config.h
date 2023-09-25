@@ -35,7 +35,7 @@ namespace grpc {
 using std::string;     // deprecated
 using std::to_string;  // deprecated
 
-namespace protobuf {
+namespace protobuf_inworld {
 
 namespace compiler {
 typedef GRPC_CUSTOM_CODEGENERATOR CodeGenerator;
@@ -55,7 +55,7 @@ typedef GRPC_CUSTOM_PRINTER Printer;
 typedef GRPC_CUSTOM_CODEDOUTPUTSTREAM CodedOutputStream;
 typedef GRPC_CUSTOM_STRINGOUTPUTSTREAM StringOutputStream;
 }  // namespace io
-}  // namespace protobuf
+}  // namespace protobuf_inworld
 }  // namespace grpc
 
 namespace grpc_cpp_generator {

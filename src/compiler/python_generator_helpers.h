@@ -29,15 +29,15 @@
 #include "src/compiler/python_generator.h"
 #include "src/compiler/python_private_generator.h"
 
-using grpc::protobuf::Descriptor;
-using grpc::protobuf::FileDescriptor;
-using grpc::protobuf::MethodDescriptor;
-using grpc::protobuf::ServiceDescriptor;
-using grpc::protobuf::compiler::GeneratorContext;
-using grpc::protobuf::io::CodedOutputStream;
-using grpc::protobuf::io::Printer;
-using grpc::protobuf::io::StringOutputStream;
-using grpc::protobuf::io::ZeroCopyOutputStream;
+using grpc::protobuf_inworld::Descriptor;
+using grpc::protobuf_inworld::FileDescriptor;
+using grpc::protobuf_inworld::MethodDescriptor;
+using grpc::protobuf_inworld::ServiceDescriptor;
+using grpc::protobuf_inworld::compiler::GeneratorContext;
+using grpc::protobuf_inworld::io::CodedOutputStream;
+using grpc::protobuf_inworld::io::Printer;
+using grpc::protobuf_inworld::io::StringOutputStream;
+using grpc::protobuf_inworld::io::ZeroCopyOutputStream;
 using grpc_generator::StringReplace;
 using grpc_generator::StripProto;
 using std::vector;

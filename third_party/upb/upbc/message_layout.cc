@@ -4,7 +4,7 @@
 
 namespace upbc {
 
-namespace protobuf = ::google::protobuf;
+namespace protobuf_inworld = ::google::protobuf_inworld;
 
 static int64_t DivRoundUp(int64_t a, int64_t b) {
   ABSL_ASSERT(a >= 0);
@@ -23,13 +23,13 @@ MessageLayout::Size MessageLayout::Place(
   return offset;
 }
 
-bool MessageLayout::HasHasbit(const protobuf::FieldDescriptor* field) {
+bool MessageLayout::HasHasbit(const protobuf_inworld::FieldDescriptor* field) {
   return field->has_presence() && !field->real_containing_oneof() &&
          !field->containing_type()->options().map_entry();
 }
 
 MessageLayout::SizeAndAlign MessageLayout::SizeOf(
-    const protobuf::FieldDescriptor* field) {
+    const protobuf_inworld::FieldDescriptor* field) {
   if (field->is_repeated()) {
     return {{4, 8}, {4, 8}};  // Pointer to array object.
   } else {
@@ -38,29 +38,29 @@ MessageLayout::SizeAndAlign MessageLayout::SizeOf(
 }
 
 MessageLayout::SizeAndAlign MessageLayout::SizeOfUnwrapped(
-    const protobuf::FieldDescriptor* field) {
+    const protobuf_inworld::FieldDescriptor* field) {
   switch (field->cpp_type()) {
-    case protobuf::FieldDescriptor::CPPTYPE_MESSAGE:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE:
       return {{4, 8}, {4, 8}};  // Pointer to message.
-    case protobuf::FieldDescriptor::CPPTYPE_STRING:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_STRING:
       return {{8, 16}, {4, 8}};  // upb_strview
-    case protobuf::FieldDescriptor::CPPTYPE_BOOL:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_BOOL:
       return {{1, 1}, {1, 1}};
-    case protobuf::FieldDescriptor::CPPTYPE_FLOAT:
-    case protobuf::FieldDescriptor::CPPTYPE_INT32:
-    case protobuf::FieldDescriptor::CPPTYPE_UINT32:
-    case protobuf::FieldDescriptor::CPPTYPE_ENUM:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_FLOAT:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_INT32:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_UINT32:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_ENUM:
       return {{4, 4}, {4, 4}};
-    case protobuf::FieldDescriptor::CPPTYPE_INT64:
-    case protobuf::FieldDescriptor::CPPTYPE_UINT64:
-    case protobuf::FieldDescriptor::CPPTYPE_DOUBLE:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_INT64:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_UINT64:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_DOUBLE:
       return {{8, 8}, {8, 8}};
   }
   assert(false);
   return {{-1, -1}, {-1, -1}};
 }
 
-int64_t MessageLayout::FieldLayoutRank(const protobuf::FieldDescriptor* field) {
+int64_t MessageLayout::FieldLayoutRank(const protobuf_inworld::FieldDescriptor* field) {
   // Order:
   //   1, 2, 3. primitive fields (8, 4, 1 byte)
   //   4. string fields
@@ -78,22 +78,22 @@ int64_t MessageLayout::FieldLayoutRank(const protobuf::FieldDescriptor* field) {
   if (field->containing_oneof()) {
     fprintf(stderr, "shouldn't have oneofs here.\n");
     abort();
-  } else if (field->label() == protobuf::FieldDescriptor::LABEL_REPEATED) {
+  } else if (field->label() == protobuf_inworld::FieldDescriptor::LABEL_REPEATED) {
     rank = 6;
   } else {
     switch (field->cpp_type()) {
-      case protobuf::FieldDescriptor::CPPTYPE_MESSAGE:
+      case protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE:
         rank = 5;
         break;
-      case protobuf::FieldDescriptor::CPPTYPE_STRING:
+      case protobuf_inworld::FieldDescriptor::CPPTYPE_STRING:
         rank = 4;
         break;
-      case protobuf::FieldDescriptor::CPPTYPE_BOOL:
+      case protobuf_inworld::FieldDescriptor::CPPTYPE_BOOL:
         rank = 3;
         break;
-      case protobuf::FieldDescriptor::CPPTYPE_FLOAT:
-      case protobuf::FieldDescriptor::CPPTYPE_INT32:
-      case protobuf::FieldDescriptor::CPPTYPE_UINT32:
+      case protobuf_inworld::FieldDescriptor::CPPTYPE_FLOAT:
+      case protobuf_inworld::FieldDescriptor::CPPTYPE_INT32:
+      case protobuf_inworld::FieldDescriptor::CPPTYPE_UINT32:
         rank = 2;
         break;
       default:
@@ -106,7 +106,7 @@ int64_t MessageLayout::FieldLayoutRank(const protobuf::FieldDescriptor* field) {
   return (rank << 29) | field->number();
 }
 
-void MessageLayout::ComputeLayout(const protobuf::Descriptor* descriptor) {
+void MessageLayout::ComputeLayout(const protobuf_inworld::Descriptor* descriptor) {
   size_ = Size{0, 0};
   maxalign_ = Size{8, 8};
 
@@ -127,17 +127,17 @@ void MessageLayout::ComputeLayout(const protobuf::Descriptor* descriptor) {
 }
 
 void MessageLayout::PlaceNonOneofFields(
-    const protobuf::Descriptor* descriptor) {
-  std::vector<const protobuf::FieldDescriptor*> field_order;
+    const protobuf_inworld::Descriptor* descriptor) {
+  std::vector<const protobuf_inworld::FieldDescriptor*> field_order;
   for (int i = 0; i < descriptor->field_count(); i++) {
-    const protobuf::FieldDescriptor* field = descriptor->field(i);
+    const protobuf_inworld::FieldDescriptor* field = descriptor->field(i);
     if (!field->containing_oneof()) {
       field_order.push_back(descriptor->field(i));
     }
   }
   std::sort(field_order.begin(), field_order.end(),
-            [](const protobuf::FieldDescriptor* a,
-               const protobuf::FieldDescriptor* b) {
+            [](const protobuf_inworld::FieldDescriptor* a,
+               const protobuf_inworld::FieldDescriptor* b) {
               return FieldLayoutRank(a) < FieldLayoutRank(b);
             });
 
@@ -161,14 +161,14 @@ void MessageLayout::PlaceNonOneofFields(
   }
 }
 
-void MessageLayout::PlaceOneofFields(const protobuf::Descriptor* descriptor) {
-  std::vector<const protobuf::OneofDescriptor*> oneof_order;
+void MessageLayout::PlaceOneofFields(const protobuf_inworld::Descriptor* descriptor) {
+  std::vector<const protobuf_inworld::OneofDescriptor*> oneof_order;
   for (int i = 0; i < descriptor->oneof_decl_count(); i++) {
     oneof_order.push_back(descriptor->oneof_decl(i));
   }
   std::sort(oneof_order.begin(), oneof_order.end(),
-            [](const protobuf::OneofDescriptor* a,
-               const protobuf::OneofDescriptor* b) {
+            [](const protobuf_inworld::OneofDescriptor* a,
+               const protobuf_inworld::OneofDescriptor* b) {
               return a->full_name() < b->full_name();
             });
 

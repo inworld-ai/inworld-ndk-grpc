@@ -23,13 +23,13 @@
 #include "src/compiler/generator_helpers.h"
 #include "src/compiler/php_generator_helpers.h"
 
-using google::protobuf::compiler::php::GeneratedClassName;
-using grpc::protobuf::Descriptor;
-using grpc::protobuf::FileDescriptor;
-using grpc::protobuf::MethodDescriptor;
-using grpc::protobuf::ServiceDescriptor;
-using grpc::protobuf::io::Printer;
-using grpc::protobuf::io::StringOutputStream;
+using google::protobuf_inworld::compiler::php::GeneratedClassName;
+using grpc::protobuf_inworld::Descriptor;
+using grpc::protobuf_inworld::FileDescriptor;
+using grpc::protobuf_inworld::MethodDescriptor;
+using grpc::protobuf_inworld::ServiceDescriptor;
+using grpc::protobuf_inworld::io::Printer;
+using grpc::protobuf_inworld::io::StringOutputStream;
 using std::map;
 
 namespace grpc_php_generator {

@@ -25,15 +25,15 @@
 #include "src/compiler/csharp_generator.h"
 #include "src/compiler/csharp_generator_helpers.h"
 
-using google::protobuf::compiler::csharp::GetClassName;
-using google::protobuf::compiler::csharp::GetFileNamespace;
-using google::protobuf::compiler::csharp::GetReflectionClassName;
-using grpc::protobuf::Descriptor;
-using grpc::protobuf::FileDescriptor;
-using grpc::protobuf::MethodDescriptor;
-using grpc::protobuf::ServiceDescriptor;
-using grpc::protobuf::io::Printer;
-using grpc::protobuf::io::StringOutputStream;
+using google::protobuf_inworld::compiler::csharp::GetClassName;
+using google::protobuf_inworld::compiler::csharp::GetFileNamespace;
+using google::protobuf_inworld::compiler::csharp::GetReflectionClassName;
+using grpc::protobuf_inworld::Descriptor;
+using grpc::protobuf_inworld::FileDescriptor;
+using grpc::protobuf_inworld::MethodDescriptor;
+using grpc::protobuf_inworld::ServiceDescriptor;
+using grpc::protobuf_inworld::io::Printer;
+using grpc::protobuf_inworld::io::StringOutputStream;
 using grpc_generator::GetMethodType;
 using grpc_generator::MethodType;
 using grpc_generator::METHODTYPE_BIDI_STREAMING;
@@ -52,8 +52,8 @@ namespace {
 // Currently, we cannot easily reuse the functionality as
 // google/protobuf/compiler/csharp/csharp_doc_comment.h is not a public header.
 // TODO(jtattermusch): reuse the functionality from google/protobuf.
-bool GenerateDocCommentBodyImpl(grpc::protobuf::io::Printer* printer,
-                                grpc::protobuf::SourceLocation location) {
+bool GenerateDocCommentBodyImpl(grpc::protobuf_inworld::io::Printer* printer,
+                                grpc::protobuf_inworld::SourceLocation location) {
   std::string comments = location.leading_comments.empty()
                              ? location.trailing_comments
                              : location.leading_comments;
@@ -99,16 +99,16 @@ bool GenerateDocCommentBodyImpl(grpc::protobuf::io::Printer* printer,
 }
 
 template <typename DescriptorType>
-bool GenerateDocCommentBody(grpc::protobuf::io::Printer* printer,
+bool GenerateDocCommentBody(grpc::protobuf_inworld::io::Printer* printer,
                             const DescriptorType* descriptor) {
-  grpc::protobuf::SourceLocation location;
+  grpc::protobuf_inworld::SourceLocation location;
   if (!descriptor->GetSourceLocation(&location)) {
     return false;
   }
   return GenerateDocCommentBodyImpl(printer, location);
 }
 
-void GenerateDocCommentServerMethod(grpc::protobuf::io::Printer* printer,
+void GenerateDocCommentServerMethod(grpc::protobuf_inworld::io::Printer* printer,
                                     const MethodDescriptor* method) {
   if (GenerateDocCommentBody(printer, method)) {
     if (method->client_streaming()) {
@@ -140,7 +140,7 @@ void GenerateDocCommentServerMethod(grpc::protobuf::io::Printer* printer,
   }
 }
 
-void GenerateDocCommentClientMethod(grpc::protobuf::io::Printer* printer,
+void GenerateDocCommentClientMethod(grpc::protobuf_inworld::io::Printer* printer,
                                     const MethodDescriptor* method,
                                     bool is_sync, bool use_call_options) {
   if (GenerateDocCommentBody(printer, method)) {

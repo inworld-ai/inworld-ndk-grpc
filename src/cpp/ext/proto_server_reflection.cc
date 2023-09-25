@@ -36,7 +36,7 @@ using grpc::reflection::v1alpha::ServiceResponse;
 namespace grpc {
 
 ProtoServerReflection::ProtoServerReflection()
-    : descriptor_pool_(protobuf::DescriptorPool::generated_pool()) {}
+    : descriptor_pool_(protobuf_inworld::DescriptorPool::generated_pool()) {}
 
 void ProtoServerReflection::SetServiceList(
     const std::vector<std::string>* services) {
@@ -115,7 +115,7 @@ Status ProtoServerReflection::GetFileByName(
     return Status::CANCELLED;
   }
 
-  const protobuf::FileDescriptor* file_desc =
+  const protobuf_inworld::FileDescriptor* file_desc =
       descriptor_pool_->FindFileByName(file_name);
   if (file_desc == nullptr) {
     return Status(StatusCode::NOT_FOUND, "File not found.");
@@ -132,7 +132,7 @@ Status ProtoServerReflection::GetFileContainingSymbol(
     return Status::CANCELLED;
   }
 
-  const protobuf::FileDescriptor* file_desc =
+  const protobuf_inworld::FileDescriptor* file_desc =
       descriptor_pool_->FindFileContainingSymbol(symbol);
   if (file_desc == nullptr) {
     return Status(StatusCode::NOT_FOUND, "Symbol not found.");
@@ -149,13 +149,13 @@ Status ProtoServerReflection::GetFileContainingExtension(
     return Status::CANCELLED;
   }
 
-  const protobuf::Descriptor* desc =
+  const protobuf_inworld::Descriptor* desc =
       descriptor_pool_->FindMessageTypeByName(request->containing_type());
   if (desc == nullptr) {
     return Status(StatusCode::NOT_FOUND, "Type not found.");
   }
 
-  const protobuf::FieldDescriptor* field_desc =
+  const protobuf_inworld::FieldDescriptor* field_desc =
       descriptor_pool_->FindExtensionByNumber(desc,
                                               request->extension_number());
   if (field_desc == nullptr) {
@@ -173,13 +173,13 @@ Status ProtoServerReflection::GetAllExtensionNumbers(
     return Status::CANCELLED;
   }
 
-  const protobuf::Descriptor* desc =
+  const protobuf_inworld::Descriptor* desc =
       descriptor_pool_->FindMessageTypeByName(type);
   if (desc == nullptr) {
     return Status(StatusCode::NOT_FOUND, "Type not found.");
   }
 
-  std::vector<const protobuf::FieldDescriptor*> extensions;
+  std::vector<const protobuf_inworld::FieldDescriptor*> extensions;
   descriptor_pool_->FindAllExtensions(desc, &extensions);
   for (const auto& value : extensions) {
     response->add_extension_number(value->number());
@@ -189,7 +189,7 @@ Status ProtoServerReflection::GetAllExtensionNumbers(
 }
 
 void ProtoServerReflection::FillFileDescriptorResponse(
-    const protobuf::FileDescriptor* file_desc,
+    const protobuf_inworld::FileDescriptor* file_desc,
     ServerReflectionResponse* response,
     std::unordered_set<std::string>* seen_files) {
   if (seen_files->find(file_desc->name()) != seen_files->end()) {
@@ -197,7 +197,7 @@ void ProtoServerReflection::FillFileDescriptorResponse(
   }
   seen_files->insert(file_desc->name());
 
-  protobuf::FileDescriptorProto file_desc_proto;
+  protobuf_inworld::FileDescriptorProto file_desc_proto;
   std::string data;
   file_desc->CopyTo(&file_desc_proto);
   file_desc_proto.SerializeToString(&data);

@@ -24,11 +24,11 @@
 #include "src/compiler/php_generator.h"
 #include "src/compiler/php_generator_helpers.h"
 
-using google::protobuf::compiler::ParseGeneratorParameter;
+using google::protobuf_inworld::compiler::ParseGeneratorParameter;
 using grpc_php_generator::GenerateFile;
 using grpc_php_generator::GetPHPServiceFilename;
 
-class PHPGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
+class PHPGrpcGenerator : public grpc::protobuf_inworld::compiler::CodeGenerator {
  public:
   PHPGrpcGenerator() {}
   ~PHPGrpcGenerator() {}
@@ -37,9 +37,9 @@ class PHPGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
     return FEATURE_PROTO3_OPTIONAL;
   }
 
-  bool Generate(const grpc::protobuf::FileDescriptor* file,
+  bool Generate(const grpc::protobuf_inworld::FileDescriptor* file,
                 const std::string& parameter,
-                grpc::protobuf::compiler::GeneratorContext* context,
+                grpc::protobuf_inworld::compiler::GeneratorContext* context,
                 std::string* error) const override {
     if (file->service_count() == 0) {
       return true;
@@ -65,9 +65,9 @@ class PHPGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
       std::string file_name =
           GetPHPServiceFilename(file, file->service(i), class_suffix);
 
-      std::unique_ptr<grpc::protobuf::io::ZeroCopyOutputStream> output(
+      std::unique_ptr<grpc::protobuf_inworld::io::ZeroCopyOutputStream> output(
           context->Open(file_name));
-      grpc::protobuf::io::CodedOutputStream coded_out(output.get());
+      grpc::protobuf_inworld::io::CodedOutputStream coded_out(output.get());
       coded_out.WriteRaw(code.data(), code.size());
     }
 
@@ -77,5 +77,5 @@ class PHPGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
 
 int main(int argc, char* argv[]) {
   PHPGrpcGenerator generator;
-  return grpc::protobuf::compiler::PluginMain(argc, argv, &generator);
+  return grpc::protobuf_inworld::compiler::PluginMain(argc, argv, &generator);
 }

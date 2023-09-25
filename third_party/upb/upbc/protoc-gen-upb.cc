@@ -15,8 +15,8 @@
 namespace upbc {
 namespace {
 
-namespace protoc = ::google::protobuf::compiler;
-namespace protobuf = ::google::protobuf;
+namespace protoc = ::google::protobuf_inworld::compiler;
+namespace protobuf_inworld = ::google::protobuf_inworld;
 
 std::string HeaderFilename(std::string proto_filename) {
   return StripExtension(proto_filename) + ".upb.h";
@@ -26,8 +26,8 @@ std::string SourceFilename(std::string proto_filename) {
   return StripExtension(proto_filename) + ".upb.c";
 }
 
-void AddEnums(const protobuf::Descriptor* message,
-              std::vector<const protobuf::EnumDescriptor*>* enums) {
+void AddEnums(const protobuf_inworld::Descriptor* message,
+              std::vector<const protobuf_inworld::EnumDescriptor*>* enums) {
   for (int i = 0; i < message->enum_type_count(); i++) {
     enums->push_back(message->enum_type(i));
   }
@@ -42,9 +42,9 @@ void SortDefs(std::vector<T>* defs) {
             [](T a, T b) { return a->full_name() < b->full_name(); });
 }
 
-std::vector<const protobuf::EnumDescriptor*> SortedEnums(
-    const protobuf::FileDescriptor* file) {
-  std::vector<const protobuf::EnumDescriptor*> enums;
+std::vector<const protobuf_inworld::EnumDescriptor*> SortedEnums(
+    const protobuf_inworld::FileDescriptor* file) {
+  std::vector<const protobuf_inworld::EnumDescriptor*> enums;
   for (int i = 0; i < file->enum_type_count(); i++) {
     enums.push_back(file->enum_type(i));
   }
@@ -55,39 +55,39 @@ std::vector<const protobuf::EnumDescriptor*> SortedEnums(
   return enums;
 }
 
-std::vector<const protobuf::FieldDescriptor*> FieldNumberOrder(
-    const protobuf::Descriptor* message) {
-  std::vector<const protobuf::FieldDescriptor*> fields;
+std::vector<const protobuf_inworld::FieldDescriptor*> FieldNumberOrder(
+    const protobuf_inworld::Descriptor* message) {
+  std::vector<const protobuf_inworld::FieldDescriptor*> fields;
   for (int i = 0; i < message->field_count(); i++) {
     fields.push_back(message->field(i));
   }
   std::sort(fields.begin(), fields.end(),
-            [](const protobuf::FieldDescriptor* a,
-               const protobuf::FieldDescriptor* b) {
+            [](const protobuf_inworld::FieldDescriptor* a,
+               const protobuf_inworld::FieldDescriptor* b) {
               return a->number() < b->number();
             });
   return fields;
 }
 
-std::vector<const protobuf::FieldDescriptor*> SortedSubmessages(
-    const protobuf::Descriptor* message) {
-  std::vector<const protobuf::FieldDescriptor*> ret;
+std::vector<const protobuf_inworld::FieldDescriptor*> SortedSubmessages(
+    const protobuf_inworld::Descriptor* message) {
+  std::vector<const protobuf_inworld::FieldDescriptor*> ret;
   for (int i = 0; i < message->field_count(); i++) {
     if (message->field(i)->cpp_type() ==
-        protobuf::FieldDescriptor::CPPTYPE_MESSAGE) {
+        protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE) {
       ret.push_back(message->field(i));
     }
   }
   std::sort(ret.begin(), ret.end(),
-            [](const protobuf::FieldDescriptor* a,
-               const protobuf::FieldDescriptor* b) {
+            [](const protobuf_inworld::FieldDescriptor* a,
+               const protobuf_inworld::FieldDescriptor* b) {
               return a->message_type()->full_name() <
                      b->message_type()->full_name();
             });
   return ret;
 }
 
-std::string EnumValueSymbol(const protobuf::EnumValueDescriptor* value) {
+std::string EnumValueSymbol(const protobuf_inworld::EnumValueDescriptor* value) {
   return ToCIdent(value->full_name());
 }
 
@@ -95,32 +95,32 @@ std::string GetSizeInit(const MessageLayout::Size& size) {
   return absl::Substitute("UPB_SIZE($0, $1)", size.size32, size.size64);
 }
 
-std::string CTypeInternal(const protobuf::FieldDescriptor* field,
+std::string CTypeInternal(const protobuf_inworld::FieldDescriptor* field,
                           bool is_const) {
   std::string maybe_const = is_const ? "const " : "";
   switch (field->cpp_type()) {
-    case protobuf::FieldDescriptor::CPPTYPE_MESSAGE: {
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE: {
       std::string maybe_struct =
           field->file() != field->message_type()->file() ? "struct " : "";
       return maybe_const + maybe_struct + MessageName(field->message_type()) +
              "*";
     }
-    case protobuf::FieldDescriptor::CPPTYPE_BOOL:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_BOOL:
       return "bool";
-    case protobuf::FieldDescriptor::CPPTYPE_FLOAT:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_FLOAT:
       return "float";
-    case protobuf::FieldDescriptor::CPPTYPE_INT32:
-    case protobuf::FieldDescriptor::CPPTYPE_ENUM:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_INT32:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_ENUM:
       return "int32_t";
-    case protobuf::FieldDescriptor::CPPTYPE_UINT32:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_UINT32:
       return "uint32_t";
-    case protobuf::FieldDescriptor::CPPTYPE_DOUBLE:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_DOUBLE:
       return "double";
-    case protobuf::FieldDescriptor::CPPTYPE_INT64:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_INT64:
       return "int64_t";
-    case protobuf::FieldDescriptor::CPPTYPE_UINT64:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_UINT64:
       return "uint64_t";
-    case protobuf::FieldDescriptor::CPPTYPE_STRING:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_STRING:
       return "upb_strview";
     default:
       fprintf(stderr, "Unexpected type");
@@ -128,27 +128,27 @@ std::string CTypeInternal(const protobuf::FieldDescriptor* field,
   }
 }
 
-std::string SizeLg2(const protobuf::FieldDescriptor* field) {
+std::string SizeLg2(const protobuf_inworld::FieldDescriptor* field) {
   switch (field->cpp_type()) {
-    case protobuf::FieldDescriptor::CPPTYPE_MESSAGE:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE:
       return "UPB_SIZE(2, 3)";
-    case protobuf::FieldDescriptor::CPPTYPE_ENUM:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_ENUM:
       return std::to_string(2);
-    case protobuf::FieldDescriptor::CPPTYPE_BOOL:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_BOOL:
       return std::to_string(1);
-    case protobuf::FieldDescriptor::CPPTYPE_FLOAT:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_FLOAT:
       return std::to_string(2);
-    case protobuf::FieldDescriptor::CPPTYPE_INT32:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_INT32:
       return std::to_string(2);
-    case protobuf::FieldDescriptor::CPPTYPE_UINT32:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_UINT32:
       return std::to_string(2);
-    case protobuf::FieldDescriptor::CPPTYPE_DOUBLE:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_DOUBLE:
       return std::to_string(3);
-    case protobuf::FieldDescriptor::CPPTYPE_INT64:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_INT64:
       return std::to_string(3);
-    case protobuf::FieldDescriptor::CPPTYPE_UINT64:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_UINT64:
       return std::to_string(3);
-    case protobuf::FieldDescriptor::CPPTYPE_STRING:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_STRING:
       return "UPB_SIZE(3, 4)";
     default:
       fprintf(stderr, "Unexpected type");
@@ -156,28 +156,28 @@ std::string SizeLg2(const protobuf::FieldDescriptor* field) {
   }
 }
 
-std::string FieldDefault(const protobuf::FieldDescriptor* field) {
+std::string FieldDefault(const protobuf_inworld::FieldDescriptor* field) {
   switch (field->cpp_type()) {
-    case protobuf::FieldDescriptor::CPPTYPE_MESSAGE:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE:
       return "NULL";
-    case protobuf::FieldDescriptor::CPPTYPE_STRING:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_STRING:
       return absl::Substitute("upb_strview_make(\"$0\", strlen(\"$0\"))",
                               absl::CEscape(field->default_value_string()));
-    case protobuf::FieldDescriptor::CPPTYPE_INT32:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_INT32:
       return absl::StrCat(field->default_value_int32());
-    case protobuf::FieldDescriptor::CPPTYPE_INT64:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_INT64:
       return absl::StrCat(field->default_value_int64());
-    case protobuf::FieldDescriptor::CPPTYPE_UINT32:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_UINT32:
       return absl::StrCat(field->default_value_uint32());
-    case protobuf::FieldDescriptor::CPPTYPE_UINT64:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_UINT64:
       return absl::StrCat(field->default_value_uint64());
-    case protobuf::FieldDescriptor::CPPTYPE_FLOAT:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_FLOAT:
       return absl::StrCat(field->default_value_float());
-    case protobuf::FieldDescriptor::CPPTYPE_DOUBLE:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_DOUBLE:
       return absl::StrCat(field->default_value_double());
-    case protobuf::FieldDescriptor::CPPTYPE_BOOL:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_BOOL:
       return field->default_value_bool() ? "true" : "false";
-    case protobuf::FieldDescriptor::CPPTYPE_ENUM:
+    case protobuf_inworld::FieldDescriptor::CPPTYPE_ENUM:
       // Use a number instead of a symbolic name so that we don't require
       // this enum's header to be included.
       return absl::StrCat(field->default_value_enum()->number());
@@ -186,22 +186,22 @@ std::string FieldDefault(const protobuf::FieldDescriptor* field) {
   return "XXX";
 }
 
-std::string CType(const protobuf::FieldDescriptor* field) {
+std::string CType(const protobuf_inworld::FieldDescriptor* field) {
   return CTypeInternal(field, false);
 }
 
-std::string CTypeConst(const protobuf::FieldDescriptor* field) {
+std::string CTypeConst(const protobuf_inworld::FieldDescriptor* field) {
   return CTypeInternal(field, true);
 }
 
-void DumpEnumValues(const protobuf::EnumDescriptor* desc, Output& output) {
-  std::vector<const protobuf::EnumValueDescriptor*> values;
+void DumpEnumValues(const protobuf_inworld::EnumDescriptor* desc, Output& output) {
+  std::vector<const protobuf_inworld::EnumValueDescriptor*> values;
   for (int i = 0; i < desc->value_count(); i++) {
     values.push_back(desc->value(i));
   }
   std::sort(values.begin(), values.end(),
-            [](const protobuf::EnumValueDescriptor* a,
-               const protobuf::EnumValueDescriptor* b) {
+            [](const protobuf_inworld::EnumValueDescriptor* a,
+               const protobuf_inworld::EnumValueDescriptor* b) {
               return a->number() < b->number();
             });
 
@@ -215,7 +215,7 @@ void DumpEnumValues(const protobuf::EnumDescriptor* desc, Output& output) {
   }
 }
 
-void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output) {
+void GenerateMessageInHeader(const protobuf_inworld::Descriptor* message, Output& output) {
   MessageLayout layout(message);
 
   output("/* $0 */\n\n", message->full_name());
@@ -246,11 +246,11 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
   }
 
   for (int i = 0; i < message->real_oneof_decl_count(); i++) {
-    const protobuf::OneofDescriptor* oneof = message->oneof_decl(i);
+    const protobuf_inworld::OneofDescriptor* oneof = message->oneof_decl(i);
     std::string fullname = ToCIdent(oneof->full_name());
     output("typedef enum {\n");
     for (int j = 0; j < oneof->field_count(); j++) {
-      const protobuf::FieldDescriptor* field = oneof->field(j);
+      const protobuf_inworld::FieldDescriptor* field = oneof->field(j);
       output("  $0_$1 = $2,\n", fullname, field->name(), field->number());
     }
     output(
@@ -291,9 +291,9 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
 
     // Generate getter.
     if (field->is_map()) {
-      const protobuf::Descriptor* entry = field->message_type();
-      const protobuf::FieldDescriptor* key = entry->FindFieldByNumber(1);
-      const protobuf::FieldDescriptor* val = entry->FindFieldByNumber(2);
+      const protobuf_inworld::Descriptor* entry = field->message_type();
+      const protobuf_inworld::FieldDescriptor* key = entry->FindFieldByNumber(1);
+      const protobuf_inworld::FieldDescriptor* val = entry->FindFieldByNumber(2);
       output(
           "UPB_INLINE size_t $0_$1_size(const $0 *msg) {"
           "return _upb_msg_map_size(msg, $2); }\n",
@@ -303,10 +303,10 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
           "return _upb_msg_map_get(msg, $4, &key, $5, val, $6); }\n",
           msgname, field->name(), CType(key), CType(val),
           GetSizeInit(layout.GetFieldOffset(field)),
-          key->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_STRING
+          key->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_STRING
               ? "0"
               : "sizeof(key)",
-          val->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_STRING
+          val->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_STRING
               ? "0"
               : "sizeof(*val)");
       output(
@@ -322,7 +322,7 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
           "  return ret;\n"
           "}\n",
           CTypeConst(field), msgname, field->name(), CType(field),
-          field->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_STRING
+          field->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_STRING
               ? "0"
               : "sizeof(ret)");
     } else if (field->is_repeated()) {
@@ -355,9 +355,9 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
   for (auto field : FieldNumberOrder(message)) {
     if (field->is_map()) {
       // TODO(haberman): add map-based mutators.
-      const protobuf::Descriptor* entry = field->message_type();
-      const protobuf::FieldDescriptor* key = entry->FindFieldByNumber(1);
-      const protobuf::FieldDescriptor* val = entry->FindFieldByNumber(2);
+      const protobuf_inworld::Descriptor* entry = field->message_type();
+      const protobuf_inworld::FieldDescriptor* key = entry->FindFieldByNumber(1);
+      const protobuf_inworld::FieldDescriptor* val = entry->FindFieldByNumber(2);
       output(
           "UPB_INLINE void $0_$1_clear($0 *msg) { _upb_msg_map_clear(msg, $2); }\n",
           msgname, field->name(),
@@ -367,10 +367,10 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
           "return _upb_msg_map_set(msg, $4, &key, $5, &val, $6, a); }\n",
           msgname, field->name(), CType(key), CType(val),
           GetSizeInit(layout.GetFieldOffset(field)),
-          key->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_STRING
+          key->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_STRING
               ? "0"
               : "sizeof(key)",
-          val->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_STRING
+          val->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_STRING
               ? "0"
               : "sizeof(val)");
       output(
@@ -378,7 +378,7 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
           "return _upb_msg_map_delete(msg, $3, &key, $4); }\n",
           msgname, field->name(), CType(key),
           GetSizeInit(layout.GetFieldOffset(field)),
-          key->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_STRING
+          key->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_STRING
               ? "0"
               : "sizeof(key)");
       output(
@@ -401,7 +401,7 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
           CType(field), msgname, field->name(),
           GetSizeInit(layout.GetFieldOffset(field)),
           SizeLg2(field));
-      if (field->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_MESSAGE) {
+      if (field->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE) {
         output(
             "UPB_INLINE struct $0* $1_add_$2($1 *msg, upb_arena *arena) {\n"
             "  struct $0* sub = (struct $0*)_upb_msg_new(&$3, arena);\n"
@@ -440,7 +440,7 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
         output(
             "  _upb_msg_map_set_value(msg, &value, $0);\n"
             "}\n",
-            field->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_STRING
+            field->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_STRING
                 ? "0"
                 : "sizeof(" + CType(field) + ")");
       } else if (field->real_containing_oneof()) {
@@ -461,7 +461,7 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
             CType(field), GetSizeInit(layout.GetFieldOffset(field)));
       }
 
-      if (field->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_MESSAGE &&
+      if (field->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE &&
           !message->options().map_entry()) {
         output(
             "UPB_INLINE struct $0* $1_mutable_$2($1 *msg, upb_arena *arena) {\n"
@@ -482,7 +482,7 @@ void GenerateMessageInHeader(const protobuf::Descriptor* message, Output& output
   output("\n");
 }
 
-void WriteHeader(const protobuf::FileDescriptor* file, Output& output) {
+void WriteHeader(const protobuf_inworld::FileDescriptor* file, Output& output) {
   EmitFileWarning(file, output);
   output(
       "#ifndef $0_UPB_H_\n"
@@ -512,7 +512,7 @@ void WriteHeader(const protobuf::FileDescriptor* file, Output& output) {
       "#endif\n"
       "\n");
 
-  std::vector<const protobuf::Descriptor*> this_file_messages =
+  std::vector<const protobuf_inworld::Descriptor*> this_file_messages =
       SortedMessages(file);
 
   // Forward-declare types defined in this file.
@@ -528,12 +528,12 @@ void WriteHeader(const protobuf::FileDescriptor* file, Output& output) {
 
   // Forward-declare types not in this file, but used as submessages.
   // Order by full name for consistent ordering.
-  std::map<std::string, const protobuf::Descriptor*> forward_messages;
+  std::map<std::string, const protobuf_inworld::Descriptor*> forward_messages;
 
   for (auto message : SortedMessages(file)) {
     for (int i = 0; i < message->field_count(); i++) {
-      const protobuf::FieldDescriptor* field = message->field(i);
-      if (field->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_MESSAGE &&
+      const protobuf_inworld::FieldDescriptor* field = message->field(i);
+      if (field->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE &&
           field->file() != field->message_type()->file()) {
         forward_messages[field->message_type()->full_name()] =
             field->message_type();
@@ -551,7 +551,7 @@ void WriteHeader(const protobuf::FileDescriptor* file, Output& output) {
     output("\n");
   }
 
-  std::vector<const protobuf::EnumDescriptor*> this_file_enums =
+  std::vector<const protobuf_inworld::EnumDescriptor*> this_file_enums =
       SortedEnums(file);
 
   for (auto enumdesc : this_file_enums) {
@@ -577,9 +577,9 @@ void WriteHeader(const protobuf::FileDescriptor* file, Output& output) {
       ToPreproc(file->name()));
 }
 
-int TableDescriptorType(const protobuf::FieldDescriptor* field) {
-  if (field->file()->syntax() == protobuf::FileDescriptor::SYNTAX_PROTO2 &&
-      field->type() == protobuf::FieldDescriptor::TYPE_STRING) {
+int TableDescriptorType(const protobuf_inworld::FieldDescriptor* field) {
+  if (field->file()->syntax() == protobuf_inworld::FileDescriptor::SYNTAX_PROTO2 &&
+      field->type() == protobuf_inworld::FieldDescriptor::TYPE_STRING) {
     // From the perspective of the binary encoder/decoder, proto2 string fields
     // are identical to bytes fields. Only in proto3 do we check UTF-8 for
     // string fields at parse time.
@@ -587,7 +587,7 @@ int TableDescriptorType(const protobuf::FieldDescriptor* field) {
     // If we ever use these tables for JSON encoding/decoding (for example by
     // embedding field names on the side) we will have to revisit this, because
     // string vs. bytes behavior is not affected by proto2 vs proto3.
-    return protobuf::FieldDescriptor::TYPE_BYTES;
+    return protobuf_inworld::FieldDescriptor::TYPE_BYTES;
   } else {
     return field->type();
   }
@@ -595,9 +595,9 @@ int TableDescriptorType(const protobuf::FieldDescriptor* field) {
 
 struct SubmsgArray {
  public:
-  SubmsgArray(const protobuf::Descriptor* message) : message_(message) {
+  SubmsgArray(const protobuf_inworld::Descriptor* message) : message_(message) {
     MessageLayout layout(message);
-    std::vector<const protobuf::FieldDescriptor*> sorted_submsgs =
+    std::vector<const protobuf_inworld::FieldDescriptor*> sorted_submsgs =
         SortedSubmessages(message);
     int i = 0;
     for (auto submsg : sorted_submsgs) {
@@ -609,11 +609,11 @@ struct SubmsgArray {
     }
   }
 
-  const std::vector<const protobuf::Descriptor*>& submsgs() const {
+  const std::vector<const protobuf_inworld::Descriptor*>& submsgs() const {
     return submsgs_;
   }
 
-  int GetIndex(const protobuf::FieldDescriptor* field) {
+  int GetIndex(const protobuf_inworld::FieldDescriptor* field) {
     (void)message_;
     assert(field->containing_type() == message_);
     auto it = indexes_.find(field->message_type());
@@ -622,20 +622,20 @@ struct SubmsgArray {
   }
 
  private:
-  const protobuf::Descriptor* message_;
-  std::vector<const protobuf::Descriptor*> submsgs_;
-  absl::flat_hash_map<const protobuf::Descriptor*, int> indexes_;
+  const protobuf_inworld::Descriptor* message_;
+  std::vector<const protobuf_inworld::Descriptor*> submsgs_;
+  absl::flat_hash_map<const protobuf_inworld::Descriptor*, int> indexes_;
 };
 
 typedef std::pair<std::string, uint64_t> TableEntry;
 
-uint64_t GetEncodedTag(const protobuf::FieldDescriptor* field) {
-  protobuf::internal::WireFormatLite::WireType wire_type =
-      protobuf::internal::WireFormat::WireTypeForField(field);
+uint64_t GetEncodedTag(const protobuf_inworld::FieldDescriptor* field) {
+  protobuf_inworld::internal::WireFormatLite::WireType wire_type =
+      protobuf_inworld::internal::WireFormat::WireTypeForField(field);
   uint32_t unencoded_tag =
-      protobuf::internal::WireFormatLite::MakeTag(field->number(), wire_type);
+      protobuf_inworld::internal::WireFormatLite::MakeTag(field->number(), wire_type);
   uint8_t tag_bytes[10] = {0};
-  protobuf::io::CodedOutputStream::WriteVarint32ToArray(unencoded_tag,
+  protobuf_inworld::io::CodedOutputStream::WriteVarint32ToArray(unencoded_tag,
                                                         tag_bytes);
   uint64_t encoded_tag = 0;
   memcpy(&encoded_tag, tag_bytes, sizeof(encoded_tag));
@@ -643,7 +643,7 @@ uint64_t GetEncodedTag(const protobuf::FieldDescriptor* field) {
   return encoded_tag;
 }
 
-int GetTableSlot(const protobuf::FieldDescriptor* field) {
+int GetTableSlot(const protobuf_inworld::FieldDescriptor* field) {
   uint64_t tag = GetEncodedTag(field);
   if (tag > 0x7fff) {
     // Tag must fit within a two-byte varint.
@@ -652,52 +652,52 @@ int GetTableSlot(const protobuf::FieldDescriptor* field) {
   return (tag & 0xf8) >> 3;
 }
 
-bool TryFillTableEntry(const protobuf::Descriptor* message,
+bool TryFillTableEntry(const protobuf_inworld::Descriptor* message,
                        const MessageLayout& layout,
-                       const protobuf::FieldDescriptor* field,
+                       const protobuf_inworld::FieldDescriptor* field,
                        TableEntry& ent) {
   std::string type = "";
   std::string cardinality = "";
   switch (field->type()) {
-    case protobuf::FieldDescriptor::TYPE_BOOL:
+    case protobuf_inworld::FieldDescriptor::TYPE_BOOL:
       type = "b1";
       break;
-    case protobuf::FieldDescriptor::TYPE_INT32:
-    case protobuf::FieldDescriptor::TYPE_ENUM:
-    case protobuf::FieldDescriptor::TYPE_UINT32:
+    case protobuf_inworld::FieldDescriptor::TYPE_INT32:
+    case protobuf_inworld::FieldDescriptor::TYPE_ENUM:
+    case protobuf_inworld::FieldDescriptor::TYPE_UINT32:
       type = "v4";
       break;
-    case protobuf::FieldDescriptor::TYPE_INT64:
-    case protobuf::FieldDescriptor::TYPE_UINT64:
+    case protobuf_inworld::FieldDescriptor::TYPE_INT64:
+    case protobuf_inworld::FieldDescriptor::TYPE_UINT64:
       type = "v8";
       break;
-    case protobuf::FieldDescriptor::TYPE_FIXED32:
-    case protobuf::FieldDescriptor::TYPE_SFIXED32:
-    case protobuf::FieldDescriptor::TYPE_FLOAT:
+    case protobuf_inworld::FieldDescriptor::TYPE_FIXED32:
+    case protobuf_inworld::FieldDescriptor::TYPE_SFIXED32:
+    case protobuf_inworld::FieldDescriptor::TYPE_FLOAT:
       type = "f4";
       break;
-    case protobuf::FieldDescriptor::TYPE_FIXED64:
-    case protobuf::FieldDescriptor::TYPE_SFIXED64:
-    case protobuf::FieldDescriptor::TYPE_DOUBLE:
+    case protobuf_inworld::FieldDescriptor::TYPE_FIXED64:
+    case protobuf_inworld::FieldDescriptor::TYPE_SFIXED64:
+    case protobuf_inworld::FieldDescriptor::TYPE_DOUBLE:
       type = "f8";
       break;
-    case protobuf::FieldDescriptor::TYPE_SINT32:
+    case protobuf_inworld::FieldDescriptor::TYPE_SINT32:
       type = "z4";
       break;
-    case protobuf::FieldDescriptor::TYPE_SINT64:
+    case protobuf_inworld::FieldDescriptor::TYPE_SINT64:
       type = "z8";
       break;
-    case protobuf::FieldDescriptor::TYPE_STRING:
-      if (field->file()->syntax() == protobuf::FileDescriptor::SYNTAX_PROTO3) {
+    case protobuf_inworld::FieldDescriptor::TYPE_STRING:
+      if (field->file()->syntax() == protobuf_inworld::FileDescriptor::SYNTAX_PROTO3) {
         // Only proto3 validates UTF-8.
         type = "s";
         break;
       }
       ABSL_FALLTHROUGH_INTENDED;
-    case protobuf::FieldDescriptor::TYPE_BYTES:
+    case protobuf_inworld::FieldDescriptor::TYPE_BYTES:
       type = "b";
       break;
-    case protobuf::FieldDescriptor::TYPE_MESSAGE:
+    case protobuf_inworld::FieldDescriptor::TYPE_MESSAGE:
       if (field->is_map()) {
         return false;  // Not supported yet (ever?).
       }
@@ -708,15 +708,15 @@ bool TryFillTableEntry(const protobuf::Descriptor* message,
   }
 
   switch (field->label()) {
-    case protobuf::FieldDescriptor::LABEL_REPEATED:
+    case protobuf_inworld::FieldDescriptor::LABEL_REPEATED:
       if (field->is_packed()) {
         cardinality = "p";
       } else {
         cardinality = "r";
       }
       break;
-    case protobuf::FieldDescriptor::LABEL_OPTIONAL:
-    case protobuf::FieldDescriptor::LABEL_REQUIRED:
+    case protobuf_inworld::FieldDescriptor::LABEL_OPTIONAL:
+    case protobuf_inworld::FieldDescriptor::LABEL_REQUIRED:
       if (field->real_containing_oneof()) {
         cardinality = "o";
       } else {
@@ -757,7 +757,7 @@ bool TryFillTableEntry(const protobuf::Descriptor* message,
     data |= hasbit_index << 24;
   }
 
-  if (field->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_MESSAGE) {
+  if (field->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE) {
     SubmsgArray submsg_array(message);
     uint64_t idx = submsg_array.GetIndex(field);
     if (idx > 255) return false;
@@ -791,7 +791,7 @@ bool TryFillTableEntry(const protobuf::Descriptor* message,
   return true;
 }
 
-std::vector<TableEntry> FastDecodeTable(const protobuf::Descriptor* message,
+std::vector<TableEntry> FastDecodeTable(const protobuf_inworld::Descriptor* message,
                                         const MessageLayout& layout) {
   std::vector<TableEntry> table;
   for (const auto field : FieldHotnessOrder(message)) {
@@ -819,7 +819,7 @@ std::vector<TableEntry> FastDecodeTable(const protobuf::Descriptor* message,
   return table;
 }
 
-void WriteSource(const protobuf::FileDescriptor* file, Output& output,
+void WriteSource(const protobuf_inworld::FileDescriptor* file, Output& output,
                  bool fasttable_enabled) {
   EmitFileWarning(file, output);
 
@@ -861,7 +861,7 @@ void WriteSource(const protobuf::FileDescriptor* file, Output& output,
       output("};\n\n");
     }
 
-    std::vector<const protobuf::FieldDescriptor*> field_number_order =
+    std::vector<const protobuf_inworld::FieldDescriptor*> field_number_order =
         FieldNumberOrder(message);
     if (!field_number_order.empty()) {
       std::string fields_array_name = msgname + "__fields";
@@ -872,7 +872,7 @@ void WriteSource(const protobuf::FileDescriptor* file, Output& output,
         int submsg_index = 0;
         std::string presence = "0";
 
-        if (field->cpp_type() == protobuf::FieldDescriptor::CPPTYPE_MESSAGE) {
+        if (field->cpp_type() == protobuf_inworld::FieldDescriptor::CPPTYPE_MESSAGE) {
           submsg_index = submsg_array.GetIndex(field);
         }
 
@@ -949,7 +949,7 @@ void WriteSource(const protobuf::FileDescriptor* file, Output& output,
 
 class Generator : public protoc::CodeGenerator {
   ~Generator() override {}
-  bool Generate(const protobuf::FileDescriptor* file,
+  bool Generate(const protobuf_inworld::FileDescriptor* file,
                 const std::string& parameter, protoc::GeneratorContext* context,
                 std::string* error) const override;
   uint64_t GetSupportedFeatures() const override {
@@ -957,13 +957,13 @@ class Generator : public protoc::CodeGenerator {
   }
 };
 
-bool Generator::Generate(const protobuf::FileDescriptor* file,
+bool Generator::Generate(const protobuf_inworld::FileDescriptor* file,
                          const std::string& parameter,
                          protoc::GeneratorContext* context,
                          std::string* error) const {
   bool fasttable_enabled = false;
   std::vector<std::pair<std::string, std::string>> params;
-  google::protobuf::compiler::ParseGeneratorParameter(parameter, &params);
+  google::protobuf_inworld::compiler::ParseGeneratorParameter(parameter, &params);
 
   for (const auto& pair : params) {
     if (pair.first == "fasttable") {
@@ -987,7 +987,7 @@ bool Generator::Generate(const protobuf::FileDescriptor* file,
 }  // namespace upbc
 
 int main(int argc, char** argv) {
-  std::unique_ptr<google::protobuf::compiler::CodeGenerator> generator(
+  std::unique_ptr<google::protobuf_inworld::compiler::CodeGenerator> generator(
       new upbc::Generator());
-  return google::protobuf::compiler::PluginMain(argc, argv, generator.get());
+  return google::protobuf_inworld::compiler::PluginMain(argc, argv, generator.get());
 }

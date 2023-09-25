@@ -362,7 +362,7 @@ bool GrpcTool::ListServices(int argc, const char** argv,
   std::shared_ptr<grpc::Channel> channel =
       CreateCliChannel(server_address, cred);
   grpc::ProtoReflectionDescriptorDatabase desc_db(channel);
-  grpc::protobuf::DescriptorPool desc_pool(&desc_db);
+  grpc::protobuf_inworld::DescriptorPool desc_pool(&desc_db);
 
   std::vector<std::string> service_list;
   if (!desc_db.GetServices(&service_list)) {
@@ -408,7 +408,7 @@ bool GrpcTool::ListServices(int argc, const char** argv,
       }
     }
 
-    const grpc::protobuf::ServiceDescriptor* service =
+    const grpc::protobuf_inworld::ServiceDescriptor* service =
         desc_pool.FindServiceByName(service_name);
     if (service != nullptr) {
       if (method_name.empty()) {
@@ -417,7 +417,7 @@ bool GrpcTool::ListServices(int argc, const char** argv,
       } else {
         method_name.insert(0, 1, '.');
         method_name.insert(0, service_name);
-        const grpc::protobuf::MethodDescriptor* method =
+        const grpc::protobuf_inworld::MethodDescriptor* method =
             desc_pool.FindMethodByName(method_name);
         if (method != nullptr) {
           output = absl::GetFlag(FLAGS_l) ? DescribeMethod(method)
@@ -433,7 +433,7 @@ bool GrpcTool::ListServices(int argc, const char** argv,
         fprintf(stderr, "Service %s not found.\n", service_name.c_str());
         return false;
       } else {
-        const grpc::protobuf::MethodDescriptor* method =
+        const grpc::protobuf_inworld::MethodDescriptor* method =
             desc_pool.FindMethodByName(service_name);
         if (method != nullptr) {
           output = absl::GetFlag(FLAGS_l) ? DescribeMethod(method)
@@ -463,10 +463,10 @@ bool GrpcTool::PrintType(int /*argc*/, const char** argv,
   std::shared_ptr<grpc::Channel> channel =
       CreateCliChannel(server_address, cred);
   grpc::ProtoReflectionDescriptorDatabase desc_db(channel);
-  grpc::protobuf::DescriptorPool desc_pool(&desc_db);
+  grpc::protobuf_inworld::DescriptorPool desc_pool(&desc_db);
 
   std::string output;
-  const grpc::protobuf::Descriptor* descriptor =
+  const grpc::protobuf_inworld::Descriptor* descriptor =
       desc_pool.FindMessageTypeByName(argv[1]);
   if (descriptor != nullptr) {
     output = descriptor->DebugString();

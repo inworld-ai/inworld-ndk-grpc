@@ -40,33 +40,33 @@ class MessageLayout {
     }
   };
 
-  MessageLayout(const google::protobuf::Descriptor* descriptor) {
+  MessageLayout(const google::protobuf_inworld::Descriptor* descriptor) {
     ComputeLayout(descriptor);
   }
 
-  Size GetFieldOffset(const google::protobuf::FieldDescriptor* field) const {
+  Size GetFieldOffset(const google::protobuf_inworld::FieldDescriptor* field) const {
     return GetMapValue(field_offsets_, field);
   }
 
   Size GetOneofCaseOffset(
-      const google::protobuf::OneofDescriptor* oneof) const {
+      const google::protobuf_inworld::OneofDescriptor* oneof) const {
     return GetMapValue(oneof_case_offsets_, oneof);
   }
 
-  int GetHasbitIndex(const google::protobuf::FieldDescriptor* field) const {
+  int GetHasbitIndex(const google::protobuf_inworld::FieldDescriptor* field) const {
     return GetMapValue(hasbit_indexes_, field);
   }
 
   Size message_size() const { return size_; }
 
-  static bool HasHasbit(const google::protobuf::FieldDescriptor* field);
+  static bool HasHasbit(const google::protobuf_inworld::FieldDescriptor* field);
   static SizeAndAlign SizeOfUnwrapped(
-      const google::protobuf::FieldDescriptor* field);
+      const google::protobuf_inworld::FieldDescriptor* field);
 
  private:
-  void ComputeLayout(const google::protobuf::Descriptor* descriptor);
-  void PlaceNonOneofFields(const google::protobuf::Descriptor* descriptor);
-  void PlaceOneofFields(const google::protobuf::Descriptor* descriptor);
+  void ComputeLayout(const google::protobuf_inworld::Descriptor* descriptor);
+  void PlaceNonOneofFields(const google::protobuf_inworld::Descriptor* descriptor);
+  void PlaceOneofFields(const google::protobuf_inworld::Descriptor* descriptor);
   Size Place(SizeAndAlign size_and_align);
 
   template <class K, class V>
@@ -88,15 +88,15 @@ class MessageLayout {
     return (val + align - 1) & ~(align - 1);
   }
 
-  static SizeAndAlign SizeOf(const google::protobuf::FieldDescriptor* field);
+  static SizeAndAlign SizeOf(const google::protobuf_inworld::FieldDescriptor* field);
   static int64_t FieldLayoutRank(
-      const google::protobuf::FieldDescriptor* field);
+      const google::protobuf_inworld::FieldDescriptor* field);
 
-  absl::flat_hash_map<const google::protobuf::FieldDescriptor*, Size>
+  absl::flat_hash_map<const google::protobuf_inworld::FieldDescriptor*, Size>
       field_offsets_;
-  absl::flat_hash_map<const google::protobuf::FieldDescriptor*, int>
+  absl::flat_hash_map<const google::protobuf_inworld::FieldDescriptor*, int>
       hasbit_indexes_;
-  absl::flat_hash_map<const google::protobuf::OneofDescriptor*, Size>
+  absl::flat_hash_map<const google::protobuf_inworld::OneofDescriptor*, Size>
       oneof_case_offsets_;
   Size maxalign_;
   Size size_;
@@ -105,15 +105,15 @@ class MessageLayout {
 // Returns fields in order of "hotness", eg. how frequently they appear in
 // serialized payloads. Ideally this will use a profile. When we don't have
 // that, we assume that fields with smaller numbers are used more frequently.
-inline std::vector<const google::protobuf::FieldDescriptor*> FieldHotnessOrder(
-    const google::protobuf::Descriptor* message) {
-  std::vector<const google::protobuf::FieldDescriptor*> fields;
+inline std::vector<const google::protobuf_inworld::FieldDescriptor*> FieldHotnessOrder(
+    const google::protobuf_inworld::Descriptor* message) {
+  std::vector<const google::protobuf_inworld::FieldDescriptor*> fields;
   for (int i = 0; i < message->field_count(); i++) {
     fields.push_back(message->field(i));
   }
   std::sort(fields.begin(), fields.end(),
-            [](const google::protobuf::FieldDescriptor* a,
-               const google::protobuf::FieldDescriptor* b) {
+            [](const google::protobuf_inworld::FieldDescriptor* a,
+               const google::protobuf_inworld::FieldDescriptor* b) {
               return a->number() < b->number();
             });
   return fields;

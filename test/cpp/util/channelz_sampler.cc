@@ -438,26 +438,26 @@ class ChannelzSampler final {
                 << GetChannelName(_channel) << " data:" << std::endl;
       // TODO(mohanli): TextFormat::PrintToString records time as seconds and
       // nanos. Need a more human readable way.
-      ::google::protobuf::TextFormat::PrintToString(_channel.data(), &data_str);
+      ::google::protobuf_inworld::TextFormat::PrintToString(_channel.data(), &data_str);
       printf("%s\n", data_str.c_str());
     }
     for (const auto& _subchannel : all_subchannels_) {
       std::cout << "subchannel ID" << GetSubchannelID(_subchannel) << "_"
                 << GetSubchannelName(_subchannel) << " data:" << std::endl;
-      ::google::protobuf::TextFormat::PrintToString(_subchannel.data(),
+      ::google::protobuf_inworld::TextFormat::PrintToString(_subchannel.data(),
                                                     &data_str);
       printf("%s\n", data_str.c_str());
     }
     for (const auto& _server : all_servers_) {
       std::cout << "server ID" << GetServerID(_server) << "_"
                 << GetServerName(_server) << " data:" << std::endl;
-      ::google::protobuf::TextFormat::PrintToString(_server.data(), &data_str);
+      ::google::protobuf_inworld::TextFormat::PrintToString(_server.data(), &data_str);
       printf("%s\n", data_str.c_str());
     }
     for (const auto& _socket : all_sockets_) {
       std::cout << "socket ID" << GetSocketID(_socket) << "_"
                 << GetSocketName(_socket) << " data:" << std::endl;
-      ::google::protobuf::TextFormat::PrintToString(_socket.data(), &data_str);
+      ::google::protobuf_inworld::TextFormat::PrintToString(_socket.data(), &data_str);
       printf("%s\n", data_str.c_str());
     }
   }
@@ -467,7 +467,7 @@ class ChannelzSampler final {
     std::string id = grpc::to_string(GetChannelID(channel));
     std::string type = "Channel";
     std::string description;
-    ::google::protobuf::TextFormat::PrintToString(channel.data(), &description);
+    ::google::protobuf_inworld::TextFormat::PrintToString(channel.data(), &description);
     grpc_core::Json description_json = grpc_core::Json(description);
     StoreEntityInJson(id, type, description_json);
   }
@@ -477,7 +477,7 @@ class ChannelzSampler final {
     std::string id = grpc::to_string(GetSubchannelID(subchannel));
     std::string type = "Subchannel";
     std::string description;
-    ::google::protobuf::TextFormat::PrintToString(subchannel.data(),
+    ::google::protobuf_inworld::TextFormat::PrintToString(subchannel.data(),
                                                   &description);
     grpc_core::Json description_json = grpc_core::Json(description);
     StoreEntityInJson(id, type, description_json);
@@ -488,7 +488,7 @@ class ChannelzSampler final {
     std::string id = grpc::to_string(GetServerID(server));
     std::string type = "Server";
     std::string description;
-    ::google::protobuf::TextFormat::PrintToString(server.data(), &description);
+    ::google::protobuf_inworld::TextFormat::PrintToString(server.data(), &description);
     grpc_core::Json description_json = grpc_core::Json(description);
     StoreEntityInJson(id, type, description_json);
   }
@@ -498,7 +498,7 @@ class ChannelzSampler final {
     std::string id = grpc::to_string(GetSocketID(socket));
     std::string type = "Socket";
     std::string description;
-    ::google::protobuf::TextFormat::PrintToString(socket.data(), &description);
+    ::google::protobuf_inworld::TextFormat::PrintToString(socket.data(), &description);
     grpc_core::Json description_json = grpc_core::Json(description);
     StoreEntityInJson(id, type, description_json);
   }

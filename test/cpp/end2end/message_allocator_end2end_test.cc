@@ -358,15 +358,15 @@ class ArenaAllocatorTest : public MessageAllocatorEnd2endTestBase {
      public:
       MessageHolderImpl() {
         set_request(
-            google::protobuf::Arena::CreateMessage<EchoRequest>(&arena_));
+            google::protobuf_inworld::Arena::CreateMessage<EchoRequest>(&arena_));
         set_response(
-            google::protobuf::Arena::CreateMessage<EchoResponse>(&arena_));
+            google::protobuf_inworld::Arena::CreateMessage<EchoResponse>(&arena_));
       }
       void Release() override { delete this; }
       void FreeRequest() override { GPR_ASSERT(0); }
 
      private:
-      google::protobuf::Arena arena_;
+      google::protobuf_inworld::Arena arena_;
     };
     experimental::MessageHolder<EchoRequest, EchoResponse>* AllocateMessages()
         override {

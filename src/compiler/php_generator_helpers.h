@@ -27,7 +27,7 @@
 namespace grpc_php_generator {
 
 inline std::string GetPHPServiceClassname(
-    const grpc::protobuf::ServiceDescriptor* service,
+    const grpc::protobuf_inworld::ServiceDescriptor* service,
     const std::string& class_suffix) {
   return service->name() + (class_suffix == "" ? "Client" : class_suffix);
 }
@@ -44,8 +44,8 @@ inline std::string ReplaceAll(std::string s, const std::string& search,
 }
 
 inline std::string GetPHPServiceFilename(
-    const grpc::protobuf::FileDescriptor* file,
-    const grpc::protobuf::ServiceDescriptor* service,
+    const grpc::protobuf_inworld::FileDescriptor* file,
+    const grpc::protobuf_inworld::ServiceDescriptor* service,
     const std::string& class_suffix) {
   std::ostringstream oss;
   if (file->options().has_php_namespace()) {

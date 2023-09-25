@@ -27,12 +27,12 @@
 
 namespace grpc_objective_c_generator {
 
-using ::grpc::protobuf::FileDescriptor;
-using ::grpc::protobuf::ServiceDescriptor;
+using ::grpc::protobuf_inworld::FileDescriptor;
+using ::grpc::protobuf_inworld::ServiceDescriptor;
 using ::std::string;
 
 inline string MessageHeaderName(const FileDescriptor* file) {
-  return google::protobuf::compiler::objectivec::FilePath(file) + ".pbobjc.h";
+  return google::protobuf_inworld::compiler::objectivec::FilePath(file) + ".pbobjc.h";
 }
 
 inline string ServiceClassName(const ServiceDescriptor* service) {

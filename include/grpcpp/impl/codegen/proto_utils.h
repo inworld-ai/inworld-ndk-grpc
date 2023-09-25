@@ -40,14 +40,14 @@ namespace grpc {
 
 extern CoreCodegenInterface* g_core_codegen_interface;
 
-// ProtoBufferWriter must be a subclass of ::protobuf::io::ZeroCopyOutputStream.
+// ProtoBufferWriter must be a subclass of ::protobuf_inworld::io::ZeroCopyOutputStream.
 template <class ProtoBufferWriter, class T>
-Status GenericSerialize(const grpc::protobuf::MessageLite& msg, ByteBuffer* bb,
+Status GenericSerialize(const grpc::protobuf_inworld::MessageLite& msg, ByteBuffer* bb,
                         bool* own_buffer) {
-  static_assert(std::is_base_of<protobuf::io::ZeroCopyOutputStream,
+  static_assert(std::is_base_of<protobuf_inworld::io::ZeroCopyOutputStream,
                                 ProtoBufferWriter>::value,
                 "ProtoBufferWriter must be a subclass of "
-                "::protobuf::io::ZeroCopyOutputStream");
+                "::protobuf_inworld::io::ZeroCopyOutputStream");
   *own_buffer = true;
   int byte_size = static_cast<int>(msg.ByteSizeLong());
   if (static_cast<size_t>(byte_size) <= GRPC_SLICE_INLINED_SIZE) {
@@ -66,14 +66,14 @@ Status GenericSerialize(const grpc::protobuf::MessageLite& msg, ByteBuffer* bb,
              : Status(StatusCode::INTERNAL, "Failed to serialize message");
 }
 
-// BufferReader must be a subclass of ::protobuf::io::ZeroCopyInputStream.
+// BufferReader must be a subclass of ::protobuf_inworld::io::ZeroCopyInputStream.
 template <class ProtoBufferReader, class T>
 Status GenericDeserialize(ByteBuffer* buffer,
-                          grpc::protobuf::MessageLite* msg) {
-  static_assert(std::is_base_of<protobuf::io::ZeroCopyInputStream,
+                          grpc::protobuf_inworld::MessageLite* msg) {
+  static_assert(std::is_base_of<protobuf_inworld::io::ZeroCopyInputStream,
                                 ProtoBufferReader>::value,
                 "ProtoBufferReader must be a subclass of "
-                "::protobuf::io::ZeroCopyInputStream");
+                "::protobuf_inworld::io::ZeroCopyInputStream");
   if (buffer == nullptr) {
     return Status(StatusCode::INTERNAL, "No payload");
   }
@@ -100,15 +100,15 @@ Status GenericDeserialize(ByteBuffer* buffer,
 template <class T>
 class SerializationTraits<
     T, typename std::enable_if<
-           std::is_base_of<grpc::protobuf::MessageLite, T>::value>::type> {
+           std::is_base_of<grpc::protobuf_inworld::MessageLite, T>::value>::type> {
  public:
-  static Status Serialize(const grpc::protobuf::MessageLite& msg,
+  static Status Serialize(const grpc::protobuf_inworld::MessageLite& msg,
                           ByteBuffer* bb, bool* own_buffer) {
     return GenericSerialize<ProtoBufferWriter, T>(msg, bb, own_buffer);
   }
 
   static Status Deserialize(ByteBuffer* buffer,
-                            grpc::protobuf::MessageLite* msg) {
+                            grpc::protobuf_inworld::MessageLite* msg) {
     return GenericDeserialize<ProtoBufferReader, T>(buffer, msg);
   }
 };

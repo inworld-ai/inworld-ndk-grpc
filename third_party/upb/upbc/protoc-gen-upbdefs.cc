@@ -10,10 +10,10 @@
 namespace upbc {
 namespace {
 
-namespace protoc = ::google::protobuf::compiler;
-namespace protobuf = ::google::protobuf;
+namespace protoc = ::google::protobuf_inworld::compiler;
+namespace protobuf_inworld = ::google::protobuf_inworld;
 
-std::string DefInitSymbol(const protobuf::FileDescriptor *file) {
+std::string DefInitSymbol(const protobuf_inworld::FileDescriptor *file) {
   return ToCIdent(file->name()) + "_upbdefinit";
 }
 
@@ -25,7 +25,7 @@ static std::string DefSourceFilename(std::string proto_filename) {
   return StripExtension(proto_filename) + ".upbdefs.c";
 }
 
-void GenerateMessageDefAccessor(const protobuf::Descriptor* d, Output& output) {
+void GenerateMessageDefAccessor(const protobuf_inworld::Descriptor* d, Output& output) {
   output("UPB_INLINE const upb_msgdef *$0_getmsgdef(upb_symtab *s) {\n",
          ToCIdent(d->full_name()));
   output("  _upb_symtab_loaddefinit(s, &$0);\n", DefInitSymbol(d->file()));
@@ -38,7 +38,7 @@ void GenerateMessageDefAccessor(const protobuf::Descriptor* d, Output& output) {
   }
 }
 
-void WriteDefHeader(const protobuf::FileDescriptor* file, Output& output) {
+void WriteDefHeader(const protobuf_inworld::FileDescriptor* file, Output& output) {
   EmitFileWarning(file, output);
 
   output(
@@ -75,7 +75,7 @@ void WriteDefHeader(const protobuf::FileDescriptor* file, Output& output) {
 }
 
 
-void WriteDefSource(const protobuf::FileDescriptor* file, Output& output) {
+void WriteDefSource(const protobuf_inworld::FileDescriptor* file, Output& output) {
   EmitFileWarning(file, output);
 
   output("#include \"upb/def.h\"\n");
@@ -86,7 +86,7 @@ void WriteDefSource(const protobuf::FileDescriptor* file, Output& output) {
     output("extern upb_def_init $0;\n", DefInitSymbol(file->dependency(i)));
   }
 
-  std::vector<const protobuf::Descriptor*> file_messages =
+  std::vector<const protobuf_inworld::Descriptor*> file_messages =
       SortedMessages(file);
 
   for (auto message : file_messages) {
@@ -103,7 +103,7 @@ void WriteDefSource(const protobuf::FileDescriptor* file, Output& output) {
     output("\n");
   }
 
-  protobuf::FileDescriptorProto file_proto;
+  protobuf_inworld::FileDescriptorProto file_proto;
   file->CopyTo(&file_proto);
   std::string file_data;
   file_proto.SerializeToString(&file_data);
@@ -144,7 +144,7 @@ void WriteDefSource(const protobuf::FileDescriptor* file, Output& output) {
 
 class Generator : public protoc::CodeGenerator {
   ~Generator() override {}
-  bool Generate(const protobuf::FileDescriptor* file,
+  bool Generate(const protobuf_inworld::FileDescriptor* file,
                 const std::string& parameter, protoc::GeneratorContext* context,
                 std::string* error) const override;
   uint64_t GetSupportedFeatures() const override {
@@ -152,12 +152,12 @@ class Generator : public protoc::CodeGenerator {
   }
 };
 
-bool Generator::Generate(const protobuf::FileDescriptor* file,
+bool Generator::Generate(const protobuf_inworld::FileDescriptor* file,
                          const std::string& parameter,
                          protoc::GeneratorContext* context,
                          std::string* error) const {
   std::vector<std::pair<std::string, std::string>> params;
-  google::protobuf::compiler::ParseGeneratorParameter(parameter, &params);
+  google::protobuf_inworld::compiler::ParseGeneratorParameter(parameter, &params);
 
   for (const auto& pair : params) {
     *error = "Unknown parameter: " + pair.first;
@@ -177,7 +177,7 @@ bool Generator::Generate(const protobuf::FileDescriptor* file,
 }  // namespace upbc
 
 int main(int argc, char** argv) {
-  std::unique_ptr<google::protobuf::compiler::CodeGenerator> generator(
+  std::unique_ptr<google::protobuf_inworld::compiler::CodeGenerator> generator(
       new upbc::Generator());
-  return google::protobuf::compiler::PluginMain(argc, argv, generator.get());
+  return google::protobuf_inworld::compiler::PluginMain(argc, argv, generator.get());
 }

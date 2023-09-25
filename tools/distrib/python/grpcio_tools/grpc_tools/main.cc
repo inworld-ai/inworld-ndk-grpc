@@ -31,22 +31,22 @@
 #include <unordered_set>
 #include <vector>
 
-using ::google::protobuf::FileDescriptor;
-using ::google::protobuf::compiler::CodeGenerator;
-using ::google::protobuf::compiler::DiskSourceTree;
-using ::google::protobuf::compiler::GeneratorContext;
-using ::google::protobuf::compiler::Importer;
-using ::google::protobuf::compiler::MultiFileErrorCollector;
-using ::google::protobuf::io::StringOutputStream;
-using ::google::protobuf::io::ZeroCopyOutputStream;
+using ::google::protobuf_inworld::FileDescriptor;
+using ::google::protobuf_inworld::compiler::CodeGenerator;
+using ::google::protobuf_inworld::compiler::DiskSourceTree;
+using ::google::protobuf_inworld::compiler::GeneratorContext;
+using ::google::protobuf_inworld::compiler::Importer;
+using ::google::protobuf_inworld::compiler::MultiFileErrorCollector;
+using ::google::protobuf_inworld::io::StringOutputStream;
+using ::google::protobuf_inworld::io::ZeroCopyOutputStream;
 
 namespace grpc_tools {
 int protoc_main(int argc, char* argv[]) {
-  google::protobuf::compiler::CommandLineInterface cli;
+  google::protobuf_inworld::compiler::CommandLineInterface cli;
   cli.AllowPlugins("protoc-");
 
   // Proto2 Python
-  google::protobuf::compiler::python::Generator py_generator;
+  google::protobuf_inworld::compiler::python::Generator py_generator;
   cli.RegisterGenerator("--python_out", &py_generator,
                         "Generate Python source file.");
 
@@ -85,7 +85,7 @@ class GeneratorContextImpl : public GeneratorContext {
   }
 
   void ListParsedFiles(
-      std::vector<const ::google::protobuf::FileDescriptor*>* output) {
+      std::vector<const ::google::protobuf_inworld::FileDescriptor*>* output) {
     *output = parsed_files_;
   }
 
@@ -118,7 +118,7 @@ class ErrorCollectorImpl : public MultiFileErrorCollector {
 static void calculate_transitive_closure(
     const FileDescriptor* descriptor,
     std::vector<const FileDescriptor*>* transitive_closure,
-    std::unordered_set<const ::google::protobuf::FileDescriptor*>* visited) {
+    std::unordered_set<const ::google::protobuf_inworld::FileDescriptor*>* visited) {
   for (int i = 0; i < descriptor->dependency_count(); ++i) {
     const FileDescriptor* dependency = descriptor->dependency(i);
     if (visited->find(dependency) == visited->end()) {
@@ -166,7 +166,7 @@ int protoc_get_protos(
     std::vector<std::pair<std::string, std::string>>* files_out,
     std::vector<::grpc_tools::ProtocError>* errors,
     std::vector<::grpc_tools::ProtocWarning>* warnings) {
-  ::google::protobuf::compiler::python::Generator python_generator;
+  ::google::protobuf_inworld::compiler::python::Generator python_generator;
   return generate_code(&python_generator, protobuf_path, include_paths,
                        files_out, errors, warnings);
 }

@@ -64,14 +64,14 @@ class ProtoServerReflection final
       reflection::v1alpha::ExtensionNumberResponse* response);
 
   void FillFileDescriptorResponse(
-      const protobuf::FileDescriptor* file_desc,
+      const protobuf_inworld::FileDescriptor* file_desc,
       reflection::v1alpha::ServerReflectionResponse* response,
       std::unordered_set<std::string>* seen_files);
 
   void FillErrorResponse(const Status& status,
                          reflection::v1alpha::ErrorResponse* error_response);
 
-  const protobuf::DescriptorPool* descriptor_pool_;
+  const protobuf_inworld::DescriptorPool* descriptor_pool_;
   const std::vector<string>* services_;
 };
 

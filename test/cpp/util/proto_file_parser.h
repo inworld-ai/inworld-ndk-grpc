@@ -109,18 +109,18 @@ class ProtoFileParser {
 
   bool has_error_;
   std::string request_text_;
-  protobuf::compiler::DiskSourceTree source_tree_;
+  protobuf_inworld::compiler::DiskSourceTree source_tree_;
   std::unique_ptr<ErrorPrinter> error_printer_;
-  std::unique_ptr<protobuf::compiler::Importer> importer_;
+  std::unique_ptr<protobuf_inworld::compiler::Importer> importer_;
   std::unique_ptr<grpc::ProtoReflectionDescriptorDatabase> reflection_db_;
-  std::unique_ptr<protobuf::DescriptorPoolDatabase> file_db_;
-  std::unique_ptr<protobuf::DescriptorDatabase> desc_db_;
-  std::unique_ptr<protobuf::DescriptorPool> desc_pool_;
-  std::unique_ptr<protobuf::DynamicMessageFactory> dynamic_factory_;
-  std::unique_ptr<grpc::protobuf::Message> request_prototype_;
-  std::unique_ptr<grpc::protobuf::Message> response_prototype_;
+  std::unique_ptr<protobuf_inworld::DescriptorPoolDatabase> file_db_;
+  std::unique_ptr<protobuf_inworld::DescriptorDatabase> desc_db_;
+  std::unique_ptr<protobuf_inworld::DescriptorPool> desc_pool_;
+  std::unique_ptr<protobuf_inworld::DynamicMessageFactory> dynamic_factory_;
+  std::unique_ptr<grpc::protobuf_inworld::Message> request_prototype_;
+  std::unique_ptr<grpc::protobuf_inworld::Message> response_prototype_;
   std::unordered_map<std::string, std::string> known_methods_;
-  std::vector<const protobuf::ServiceDescriptor*> service_desc_list_;
+  std::vector<const protobuf_inworld::ServiceDescriptor*> service_desc_list_;
 };
 
 }  // namespace testing

@@ -46,7 +46,7 @@ class ProtoServerReflectionTest : public ::testing::Test {
 
   void SetUp() override {
     port_ = grpc_pick_unused_port_or_die();
-    ref_desc_pool_ = protobuf::DescriptorPool::generated_pool();
+    ref_desc_pool_ = protobuf_inworld::DescriptorPool::generated_pool();
 
     ServerBuilder builder;
     std::string server_address = "localhost:" + to_string(port_);
@@ -60,7 +60,7 @@ class ProtoServerReflectionTest : public ::testing::Test {
         grpc::CreateChannel(target, InsecureChannelCredentials());
     stub_ = grpc::testing::EchoTestService::NewStub(channel);
     desc_db_ = absl::make_unique<ProtoReflectionDescriptorDatabase>(channel);
-    desc_pool_ = absl::make_unique<protobuf::DescriptorPool>(desc_db_.get());
+    desc_pool_ = absl::make_unique<protobuf_inworld::DescriptorPool>(desc_db_.get());
   }
 
   string to_string(const int number) {
@@ -70,15 +70,15 @@ class ProtoServerReflectionTest : public ::testing::Test {
   }
 
   void CompareService(const std::string& service) {
-    const protobuf::ServiceDescriptor* service_desc =
+    const protobuf_inworld::ServiceDescriptor* service_desc =
         desc_pool_->FindServiceByName(service);
-    const protobuf::ServiceDescriptor* ref_service_desc =
+    const protobuf_inworld::ServiceDescriptor* ref_service_desc =
         ref_desc_pool_->FindServiceByName(service);
     EXPECT_TRUE(service_desc != nullptr);
     EXPECT_TRUE(ref_service_desc != nullptr);
     EXPECT_EQ(service_desc->DebugString(), ref_service_desc->DebugString());
 
-    const protobuf::FileDescriptor* file_desc = service_desc->file();
+    const protobuf_inworld::FileDescriptor* file_desc = service_desc->file();
     if (known_files_.find(file_desc->package() + "/" + file_desc->name()) !=
         known_files_.end()) {
       EXPECT_EQ(file_desc->DebugString(),
@@ -92,9 +92,9 @@ class ProtoServerReflectionTest : public ::testing::Test {
   }
 
   void CompareMethod(const std::string& method) {
-    const protobuf::MethodDescriptor* method_desc =
+    const protobuf_inworld::MethodDescriptor* method_desc =
         desc_pool_->FindMethodByName(method);
-    const protobuf::MethodDescriptor* ref_method_desc =
+    const protobuf_inworld::MethodDescriptor* ref_method_desc =
         ref_desc_pool_->FindMethodByName(method);
     EXPECT_TRUE(method_desc != nullptr);
     EXPECT_TRUE(ref_method_desc != nullptr);
@@ -109,8 +109,8 @@ class ProtoServerReflectionTest : public ::testing::Test {
       return;
     }
 
-    const protobuf::Descriptor* desc = desc_pool_->FindMessageTypeByName(type);
-    const protobuf::Descriptor* ref_desc =
+    const protobuf_inworld::Descriptor* desc = desc_pool_->FindMessageTypeByName(type);
+    const protobuf_inworld::Descriptor* ref_desc =
         ref_desc_pool_->FindMessageTypeByName(type);
     EXPECT_TRUE(desc != nullptr);
     EXPECT_TRUE(ref_desc != nullptr);
@@ -121,10 +121,10 @@ class ProtoServerReflectionTest : public ::testing::Test {
   std::unique_ptr<Server> server_;
   std::unique_ptr<grpc::testing::EchoTestService::Stub> stub_;
   std::unique_ptr<ProtoReflectionDescriptorDatabase> desc_db_;
-  std::unique_ptr<protobuf::DescriptorPool> desc_pool_;
+  std::unique_ptr<protobuf_inworld::DescriptorPool> desc_pool_;
   std::unordered_set<string> known_files_;
   std::unordered_set<string> known_types_;
-  const protobuf::DescriptorPool* ref_desc_pool_;
+  const protobuf_inworld::DescriptorPool* ref_desc_pool_;
   int port_;
   reflection::ProtoServerReflectionPlugin plugin_;
 };

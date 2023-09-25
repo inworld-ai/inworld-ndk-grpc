@@ -43,7 +43,7 @@ bool MethodNameMatch(const std::string& full_name, const std::string& input) {
 }
 }  // namespace
 
-class ErrorPrinter : public protobuf::compiler::MultiFileErrorCollector {
+class ErrorPrinter : public protobuf_inworld::compiler::MultiFileErrorCollector {
  public:
   explicit ErrorPrinter(ProtoFileParser* parser) : parser_(parser) {}
 
@@ -69,7 +69,7 @@ ProtoFileParser::ProtoFileParser(const std::shared_ptr<grpc::Channel>& channel,
                                  const std::string& proto_path,
                                  const std::string& protofiles)
     : has_error_(false),
-      dynamic_factory_(new protobuf::DynamicMessageFactory()) {
+      dynamic_factory_(new protobuf_inworld::DynamicMessageFactory()) {
   std::vector<std::string> service_list;
   if (channel) {
     reflection_db_ =
@@ -81,7 +81,7 @@ ProtoFileParser::ProtoFileParser(const std::shared_ptr<grpc::Channel>& channel,
   if (!protofiles.empty()) {
     source_tree_.MapPath("", proto_path);
     error_printer_ = absl::make_unique<ErrorPrinter>(this);
-    importer_ = absl::make_unique<protobuf::compiler::Importer>(
+    importer_ = absl::make_unique<protobuf_inworld::compiler::Importer>(
         &source_tree_, error_printer_.get());
 
     std::string file_name;
@@ -99,7 +99,7 @@ ProtoFileParser::ProtoFileParser(const std::shared_ptr<grpc::Channel>& channel,
     }
 
     file_db_ =
-        absl::make_unique<protobuf::DescriptorPoolDatabase>(*importer_->pool());
+        absl::make_unique<protobuf_inworld::DescriptorPoolDatabase>(*importer_->pool());
   }
 
   if (!reflection_db_ && !file_db_) {
@@ -112,15 +112,15 @@ ProtoFileParser::ProtoFileParser(const std::shared_ptr<grpc::Channel>& channel,
   } else if (!file_db_) {
     desc_db_ = std::move(reflection_db_);
   } else {
-    desc_db_ = absl::make_unique<protobuf::MergedDescriptorDatabase>(
+    desc_db_ = absl::make_unique<protobuf_inworld::MergedDescriptorDatabase>(
         reflection_db_.get(), file_db_.get());
   }
 
-  desc_pool_ = absl::make_unique<protobuf::DescriptorPool>(desc_db_.get());
+  desc_pool_ = absl::make_unique<protobuf_inworld::DescriptorPool>(desc_db_.get());
 
   for (auto it = service_list.begin(); it != service_list.end(); it++) {
     if (known_services.find(*it) == known_services.end()) {
-      if (const protobuf::ServiceDescriptor* service_desc =
+      if (const protobuf_inworld::ServiceDescriptor* service_desc =
               desc_pool_->FindServiceByName(*it)) {
         service_desc_list_.push_back(service_desc);
         known_services.insert(*it);
@@ -138,7 +138,7 @@ std::string ProtoFileParser::GetFullMethodName(const std::string& method) {
     return known_methods_[method];
   }
 
-  const protobuf::MethodDescriptor* method_descriptor = nullptr;
+  const protobuf_inworld::MethodDescriptor* method_descriptor = nullptr;
   for (auto it = service_desc_list_.begin(); it != service_desc_list_.end();
        it++) {
     const auto* service_desc = *it;
@@ -189,7 +189,7 @@ std::string ProtoFileParser::GetMessageTypeFromMethod(const std::string& method,
   if (has_error_) {
     return "";
   }
-  const protobuf::MethodDescriptor* method_desc =
+  const protobuf_inworld::MethodDescriptor* method_desc =
       desc_pool_->FindMethodByName(full_method_name);
   if (!method_desc) {
     LogError("Method not found");
@@ -208,7 +208,7 @@ bool ProtoFileParser::IsStreaming(const std::string& method, bool is_request) {
     return false;
   }
 
-  const protobuf::MethodDescriptor* method_desc =
+  const protobuf_inworld::MethodDescriptor* method_desc =
       desc_pool_->FindMethodByName(full_method_name);
   if (!method_desc) {
     LogError("Method not found");
@@ -248,25 +248,25 @@ std::string ProtoFileParser::GetSerializedProtoFromMessageType(
     bool is_json_format) {
   has_error_ = false;
   std::string serialized;
-  const protobuf::Descriptor* desc =
+  const protobuf_inworld::Descriptor* desc =
       desc_pool_->FindMessageTypeByName(message_type_name);
   if (!desc) {
     LogError("Message type not found");
     return "";
   }
-  std::unique_ptr<grpc::protobuf::Message> msg(
+  std::unique_ptr<grpc::protobuf_inworld::Message> msg(
       dynamic_factory_->GetPrototype(desc)->New());
 
   bool ok;
   if (is_json_format) {
-    ok = grpc::protobuf::json::JsonStringToMessage(formatted_proto, msg.get())
+    ok = grpc::protobuf_inworld::json::JsonStringToMessage(formatted_proto, msg.get())
              .ok();
     if (!ok) {
       LogError("Failed to convert json format to proto.");
       return "";
     }
   } else {
-    ok = protobuf::TextFormat::ParseFromString(formatted_proto, msg.get());
+    ok = protobuf_inworld::TextFormat::ParseFromString(formatted_proto, msg.get());
     if (!ok) {
       LogError("Failed to convert text format to proto.");
       return "";
@@ -285,13 +285,13 @@ std::string ProtoFileParser::GetFormattedStringFromMessageType(
     const std::string& message_type_name, const std::string& serialized_proto,
     bool is_json_format) {
   has_error_ = false;
-  const protobuf::Descriptor* desc =
+  const protobuf_inworld::Descriptor* desc =
       desc_pool_->FindMessageTypeByName(message_type_name);
   if (!desc) {
     LogError("Message type not found");
     return "";
   }
-  std::unique_ptr<grpc::protobuf::Message> msg(
+  std::unique_ptr<grpc::protobuf_inworld::Message> msg(
       dynamic_factory_->GetPrototype(desc)->New());
   if (!msg->ParseFromString(serialized_proto)) {
     LogError("Failed to deserialize proto.");
@@ -300,16 +300,16 @@ std::string ProtoFileParser::GetFormattedStringFromMessageType(
   std::string formatted_string;
 
   if (is_json_format) {
-    grpc::protobuf::json::JsonPrintOptions jsonPrintOptions;
+    grpc::protobuf_inworld::json::JsonPrintOptions jsonPrintOptions;
     jsonPrintOptions.add_whitespace = true;
-    if (!grpc::protobuf::json::MessageToJsonString(*msg, &formatted_string,
+    if (!grpc::protobuf_inworld::json::MessageToJsonString(*msg, &formatted_string,
                                                    jsonPrintOptions)
              .ok()) {
       LogError("Failed to print proto message to json format");
       return "";
     }
   } else {
-    if (!protobuf::TextFormat::PrintToString(*msg, &formatted_string)) {
+    if (!protobuf_inworld::TextFormat::PrintToString(*msg, &formatted_string)) {
       LogError("Failed to print proto message to text format");
       return "";
     }

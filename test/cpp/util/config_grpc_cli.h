@@ -24,32 +24,32 @@
 #ifndef GRPC_CUSTOM_DYNAMICMESSAGEFACTORY
 #include <google/protobuf/dynamic_message.h>
 #define GRPC_CUSTOM_DYNAMICMESSAGEFACTORY \
-  ::google::protobuf::DynamicMessageFactory
+  ::google::protobuf_inworld::DynamicMessageFactory
 #endif
 
 #ifndef GRPC_CUSTOM_DESCRIPTORPOOLDATABASE
 #include <google/protobuf/descriptor.h>
 #define GRPC_CUSTOM_DESCRIPTORPOOLDATABASE \
-  ::google::protobuf::DescriptorPoolDatabase
+  ::google::protobuf_inworld::DescriptorPoolDatabase
 #define GRPC_CUSTOM_MERGEDDESCRIPTORDATABASE \
-  ::google::protobuf::MergedDescriptorDatabase
+  ::google::protobuf_inworld::MergedDescriptorDatabase
 #endif
 
 #ifndef GRPC_CUSTOM_TEXTFORMAT
 #include <google/protobuf/text_format.h>
-#define GRPC_CUSTOM_TEXTFORMAT ::google::protobuf::TextFormat
+#define GRPC_CUSTOM_TEXTFORMAT ::google::protobuf_inworld::TextFormat
 #endif
 
 #ifndef GRPC_CUSTOM_DISKSOURCETREE
 #include <google/protobuf/compiler/importer.h>
-#define GRPC_CUSTOM_DISKSOURCETREE ::google::protobuf::compiler::DiskSourceTree
-#define GRPC_CUSTOM_IMPORTER ::google::protobuf::compiler::Importer
+#define GRPC_CUSTOM_DISKSOURCETREE ::google::protobuf_inworld::compiler::DiskSourceTree
+#define GRPC_CUSTOM_IMPORTER ::google::protobuf_inworld::compiler::Importer
 #define GRPC_CUSTOM_MULTIFILEERRORCOLLECTOR \
-  ::google::protobuf::compiler::MultiFileErrorCollector
+  ::google::protobuf_inworld::compiler::MultiFileErrorCollector
 #endif
 
 namespace grpc {
-namespace protobuf {
+namespace protobuf_inworld {
 
 typedef GRPC_CUSTOM_DYNAMICMESSAGEFACTORY DynamicMessageFactory;
 
@@ -64,7 +64,7 @@ typedef GRPC_CUSTOM_IMPORTER Importer;
 typedef GRPC_CUSTOM_MULTIFILEERRORCOLLECTOR MultiFileErrorCollector;
 }  // namespace compiler
 
-}  // namespace protobuf
+}  // namespace protobuf_inworld
 }  // namespace grpc
 
 #endif  // GRPC_TEST_CPP_UTIL_CONFIG_GRPC_CLI_H

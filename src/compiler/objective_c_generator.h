@@ -28,8 +28,8 @@ struct Parameters {
   bool no_v1_compatibility;
 };
 
-using ::grpc::protobuf::FileDescriptor;
-using ::grpc::protobuf::ServiceDescriptor;
+using ::grpc::protobuf_inworld::FileDescriptor;
+using ::grpc::protobuf_inworld::ServiceDescriptor;
 using ::std::string;
 
 // Returns forward declaration of classes in the generated header file.

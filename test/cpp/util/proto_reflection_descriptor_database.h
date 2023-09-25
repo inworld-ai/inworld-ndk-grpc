@@ -32,7 +32,7 @@ namespace grpc {
 // ProtoReflectionDescriptorDatabase takes a stub of ServerReflection and
 // provides the methods defined by DescriptorDatabase interfaces. It can be used
 // to feed a DescriptorPool instance.
-class ProtoReflectionDescriptorDatabase : public protobuf::DescriptorDatabase {
+class ProtoReflectionDescriptorDatabase : public protobuf_inworld::DescriptorDatabase {
  public:
   explicit ProtoReflectionDescriptorDatabase(
       std::unique_ptr<reflection::v1alpha::ServerReflection::Stub> stub);
@@ -47,13 +47,13 @@ class ProtoReflectionDescriptorDatabase : public protobuf::DescriptorDatabase {
   // Find a file by file name.  Fills in *output and returns true if found.
   // Otherwise, returns false, leaving the contents of *output undefined.
   bool FindFileByName(const string& filename,
-                      protobuf::FileDescriptorProto* output) override;
+                      protobuf_inworld::FileDescriptorProto* output) override;
 
   // Find the file that declares the given fully-qualified symbol name.
   // If found, fills in *output and returns true, otherwise returns false
   // and leaves *output undefined.
   bool FindFileContainingSymbol(const string& symbol_name,
-                                protobuf::FileDescriptorProto* output) override;
+                                protobuf_inworld::FileDescriptorProto* output) override;
 
   // Find the file which defines an extension extending the given message type
   // with the given field number.  If found, fills in *output and returns true,
@@ -61,7 +61,7 @@ class ProtoReflectionDescriptorDatabase : public protobuf::DescriptorDatabase {
   // must be a fully-qualified type name.
   bool FindFileContainingExtension(
       const string& containing_type, int field_number,
-      protobuf::FileDescriptorProto* output) override;
+      protobuf_inworld::FileDescriptorProto* output) override;
 
   // Finds the tag numbers used by all known extensions of
   // extendee_type, and appends them to output in an undefined
@@ -82,7 +82,7 @@ class ProtoReflectionDescriptorDatabase : public protobuf::DescriptorDatabase {
       grpc::reflection::v1alpha::ServerReflectionResponse>
       ClientStream;
 
-  const protobuf::FileDescriptorProto ParseFileDescriptorProtoResponse(
+  const protobuf_inworld::FileDescriptorProto ParseFileDescriptorProtoResponse(
       const std::string& byte_fd_proto);
 
   void AddFileFromResponse(
@@ -103,7 +103,7 @@ class ProtoReflectionDescriptorDatabase : public protobuf::DescriptorDatabase {
   std::unordered_map<string, std::vector<int>> cached_extension_numbers_;
   std::mutex stream_mutex_;
 
-  protobuf::SimpleDescriptorDatabase cached_db_;
+  protobuf_inworld::SimpleDescriptorDatabase cached_db_;
 };
 
 }  // namespace grpc

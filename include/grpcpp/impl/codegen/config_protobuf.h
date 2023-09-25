@@ -24,54 +24,54 @@
 #ifndef GRPC_CUSTOM_MESSAGE
 #ifdef GRPC_USE_PROTO_LITE
 #include <google/protobuf/message_lite.h>
-#define GRPC_CUSTOM_MESSAGE ::google::protobuf::MessageLite
-#define GRPC_CUSTOM_MESSAGELITE ::google::protobuf::MessageLite
+#define GRPC_CUSTOM_MESSAGE ::google::protobuf_inworld::MessageLite
+#define GRPC_CUSTOM_MESSAGELITE ::google::protobuf_inworld::MessageLite
 #else
 #include <google/protobuf/message.h>
-#define GRPC_CUSTOM_MESSAGE ::google::protobuf::Message
-#define GRPC_CUSTOM_MESSAGELITE ::google::protobuf::MessageLite
+#define GRPC_CUSTOM_MESSAGE ::google::protobuf_inworld::Message
+#define GRPC_CUSTOM_MESSAGELITE ::google::protobuf_inworld::MessageLite
 #endif
 #endif
 
 #ifndef GRPC_CUSTOM_DESCRIPTOR
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/descriptor.pb.h>
-#define GRPC_CUSTOM_DESCRIPTOR ::google::protobuf::Descriptor
-#define GRPC_CUSTOM_DESCRIPTORPOOL ::google::protobuf::DescriptorPool
-#define GRPC_CUSTOM_FIELDDESCRIPTOR ::google::protobuf::FieldDescriptor
-#define GRPC_CUSTOM_FILEDESCRIPTOR ::google::protobuf::FileDescriptor
-#define GRPC_CUSTOM_FILEDESCRIPTORPROTO ::google::protobuf::FileDescriptorProto
-#define GRPC_CUSTOM_METHODDESCRIPTOR ::google::protobuf::MethodDescriptor
-#define GRPC_CUSTOM_SERVICEDESCRIPTOR ::google::protobuf::ServiceDescriptor
-#define GRPC_CUSTOM_SOURCELOCATION ::google::protobuf::SourceLocation
+#define GRPC_CUSTOM_DESCRIPTOR ::google::protobuf_inworld::Descriptor
+#define GRPC_CUSTOM_DESCRIPTORPOOL ::google::protobuf_inworld::DescriptorPool
+#define GRPC_CUSTOM_FIELDDESCRIPTOR ::google::protobuf_inworld::FieldDescriptor
+#define GRPC_CUSTOM_FILEDESCRIPTOR ::google::protobuf_inworld::FileDescriptor
+#define GRPC_CUSTOM_FILEDESCRIPTORPROTO ::google::protobuf_inworld::FileDescriptorProto
+#define GRPC_CUSTOM_METHODDESCRIPTOR ::google::protobuf_inworld::MethodDescriptor
+#define GRPC_CUSTOM_SERVICEDESCRIPTOR ::google::protobuf_inworld::ServiceDescriptor
+#define GRPC_CUSTOM_SOURCELOCATION ::google::protobuf_inworld::SourceLocation
 #endif
 
 #ifndef GRPC_CUSTOM_DESCRIPTORDATABASE
 #include <google/protobuf/descriptor_database.h>
-#define GRPC_CUSTOM_DESCRIPTORDATABASE ::google::protobuf::DescriptorDatabase
+#define GRPC_CUSTOM_DESCRIPTORDATABASE ::google::protobuf_inworld::DescriptorDatabase
 #define GRPC_CUSTOM_SIMPLEDESCRIPTORDATABASE \
-  ::google::protobuf::SimpleDescriptorDatabase
+  ::google::protobuf_inworld::SimpleDescriptorDatabase
 #endif
 
 #ifndef GRPC_CUSTOM_ZEROCOPYOUTPUTSTREAM
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #define GRPC_CUSTOM_ZEROCOPYOUTPUTSTREAM \
-  ::google::protobuf::io::ZeroCopyOutputStream
+  ::google::protobuf_inworld::io::ZeroCopyOutputStream
 #define GRPC_CUSTOM_ZEROCOPYINPUTSTREAM \
-  ::google::protobuf::io::ZeroCopyInputStream
-#define GRPC_CUSTOM_CODEDINPUTSTREAM ::google::protobuf::io::CodedInputStream
+  ::google::protobuf_inworld::io::ZeroCopyInputStream
+#define GRPC_CUSTOM_CODEDINPUTSTREAM ::google::protobuf_inworld::io::CodedInputStream
 #endif
 
 #ifndef GRPC_CUSTOM_JSONUTIL
 #include <google/protobuf/util/json_util.h>
 #include <google/protobuf/util/type_resolver_util.h>
-#define GRPC_CUSTOM_JSONUTIL ::google::protobuf::util
-#define GRPC_CUSTOM_UTIL_STATUS ::google::protobuf::util::Status
+#define GRPC_CUSTOM_JSONUTIL ::google::protobuf_inworld::util
+#define GRPC_CUSTOM_UTIL_STATUS ::google::protobuf_inworld::util::Status
 #endif
 
 namespace grpc {
-namespace protobuf {
+namespace protobuf_inworld {
 
 typedef GRPC_CUSTOM_MESSAGE Message;
 typedef GRPC_CUSTOM_MESSAGELITE MessageLite;
@@ -100,7 +100,7 @@ typedef GRPC_CUSTOM_ZEROCOPYINPUTSTREAM ZeroCopyInputStream;
 typedef GRPC_CUSTOM_CODEDINPUTSTREAM CodedInputStream;
 }  // namespace io
 
-}  // namespace protobuf
+}  // namespace protobuf_inworld
 }  // namespace grpc
 
 #endif  // GRPCPP_IMPL_CODEGEN_CONFIG_PROTOBUF_H

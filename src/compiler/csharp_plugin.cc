@@ -24,7 +24,7 @@
 #include "src/compiler/csharp_generator.h"
 #include "src/compiler/csharp_generator_helpers.h"
 
-class CSharpGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
+class CSharpGrpcGenerator : public grpc::protobuf_inworld::compiler::CodeGenerator {
  public:
   CSharpGrpcGenerator() {}
   ~CSharpGrpcGenerator() {}
@@ -33,12 +33,12 @@ class CSharpGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
     return FEATURE_PROTO3_OPTIONAL;
   }
 
-  bool Generate(const grpc::protobuf::FileDescriptor* file,
+  bool Generate(const grpc::protobuf_inworld::FileDescriptor* file,
                 const std::string& parameter,
-                grpc::protobuf::compiler::GeneratorContext* context,
+                grpc::protobuf_inworld::compiler::GeneratorContext* context,
                 std::string* error) const override {
     std::vector<std::pair<std::string, std::string> > options;
-    grpc::protobuf::compiler::ParseGeneratorParameter(parameter, &options);
+    grpc::protobuf_inworld::compiler::ParseGeneratorParameter(parameter, &options);
 
     bool generate_client = true;
     bool generate_server = true;
@@ -67,9 +67,9 @@ class CSharpGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
     if (!grpc_csharp_generator::ServicesFilename(file, &file_name)) {
       return false;
     }
-    std::unique_ptr<grpc::protobuf::io::ZeroCopyOutputStream> output(
+    std::unique_ptr<grpc::protobuf_inworld::io::ZeroCopyOutputStream> output(
         context->Open(file_name));
-    grpc::protobuf::io::CodedOutputStream coded_out(output.get());
+    grpc::protobuf_inworld::io::CodedOutputStream coded_out(output.get());
     coded_out.WriteRaw(code.data(), code.size());
     return true;
   }
@@ -77,5 +77,5 @@ class CSharpGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
 
 int main(int argc, char* argv[]) {
   CSharpGrpcGenerator generator;
-  return grpc::protobuf::compiler::PluginMain(argc, argv, &generator);
+  return grpc::protobuf_inworld::compiler::PluginMain(argc, argv, &generator);
 }

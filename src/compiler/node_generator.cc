@@ -23,12 +23,12 @@
 #include "src/compiler/node_generator.h"
 #include "src/compiler/node_generator_helpers.h"
 
-using grpc::protobuf::Descriptor;
-using grpc::protobuf::FileDescriptor;
-using grpc::protobuf::MethodDescriptor;
-using grpc::protobuf::ServiceDescriptor;
-using grpc::protobuf::io::Printer;
-using grpc::protobuf::io::StringOutputStream;
+using grpc::protobuf_inworld::Descriptor;
+using grpc::protobuf_inworld::FileDescriptor;
+using grpc::protobuf_inworld::MethodDescriptor;
+using grpc::protobuf_inworld::ServiceDescriptor;
+using grpc::protobuf_inworld::io::Printer;
+using grpc::protobuf_inworld::io::StringOutputStream;
 using std::map;
 
 namespace grpc_node_generator {

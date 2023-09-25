@@ -12,7 +12,7 @@ namespace upbc {
 
 class Output {
  public:
-  Output(google::protobuf::io::ZeroCopyOutputStream* stream)
+  Output(google::protobuf_inworld::io::ZeroCopyOutputStream* stream)
       : stream_(stream) {}
   ~Output() { stream_->BackUp((int)size_); }
 
@@ -46,7 +46,7 @@ class Output {
     }
   }
 
-  google::protobuf::io::ZeroCopyOutputStream* stream_;
+  google::protobuf_inworld::io::ZeroCopyOutputStream* stream_;
   char *ptr_ = nullptr;
   size_t size_ = 0;
 };
@@ -54,12 +54,12 @@ class Output {
 std::string StripExtension(absl::string_view fname);
 std::string ToCIdent(absl::string_view str);
 std::string ToPreproc(absl::string_view str);
-void EmitFileWarning(const google::protobuf::FileDescriptor* file,
+void EmitFileWarning(const google::protobuf_inworld::FileDescriptor* file,
                      Output& output);
-std::vector<const google::protobuf::Descriptor*> SortedMessages(
-    const google::protobuf::FileDescriptor* file);
-std::string MessageInit(const google::protobuf::Descriptor* descriptor);
-std::string MessageName(const google::protobuf::Descriptor* descriptor);
+std::vector<const google::protobuf_inworld::Descriptor*> SortedMessages(
+    const google::protobuf_inworld::FileDescriptor* file);
+std::string MessageInit(const google::protobuf_inworld::Descriptor* descriptor);
+std::string MessageName(const google::protobuf_inworld::Descriptor* descriptor);
 
 }  // namespace upbc
 

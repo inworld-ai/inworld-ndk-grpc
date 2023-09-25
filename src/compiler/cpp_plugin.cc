@@ -22,5 +22,5 @@
 
 int main(int argc, char* argv[]) {
   CppGrpcGenerator generator;
-  return grpc::protobuf::compiler::PluginMain(argc, argv, &generator);
+  return grpc::protobuf_inworld::compiler::PluginMain(argc, argv, &generator);
 }

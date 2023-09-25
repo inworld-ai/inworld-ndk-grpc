@@ -569,7 +569,7 @@ class AdsServiceImpl : public std::enable_shared_from_this<AdsServiceImpl> {
     }
   }
 
-  void SetResource(google::protobuf::Any resource, const std::string& type_url,
+  void SetResource(google::protobuf_inworld::Any resource, const std::string& type_url,
                    const std::string& name) {
     grpc_core::MutexLock lock(&ads_mu_);
     ResourceTypeState& resource_type_state = resource_map_[type_url];
@@ -588,25 +588,25 @@ class AdsServiceImpl : public std::enable_shared_from_this<AdsServiceImpl> {
   }
 
   void SetLdsResource(const Listener& listener) {
-    google::protobuf::Any resource;
+    google::protobuf_inworld::Any resource;
     resource.PackFrom(listener);
     SetResource(std::move(resource), kLdsTypeUrl, listener.name());
   }
 
   void SetRdsResource(const RouteConfiguration& route) {
-    google::protobuf::Any resource;
+    google::protobuf_inworld::Any resource;
     resource.PackFrom(route);
     SetResource(std::move(resource), kRdsTypeUrl, route.name());
   }
 
   void SetCdsResource(const Cluster& cluster) {
-    google::protobuf::Any resource;
+    google::protobuf_inworld::Any resource;
     resource.PackFrom(cluster);
     SetResource(std::move(resource), kCdsTypeUrl, cluster.name());
   }
 
   void SetEdsResource(const ClusterLoadAssignment& assignment) {
-    google::protobuf::Any resource;
+    google::protobuf_inworld::Any resource;
     resource.PackFrom(assignment);
     SetResource(std::move(resource), kEdsTypeUrl, assignment.cluster_name());
   }
@@ -669,7 +669,7 @@ class AdsServiceImpl : public std::enable_shared_from_this<AdsServiceImpl> {
   // A struct representing the current state for an individual resource.
   struct ResourceState {
     // The resource itself, if present.
-    absl::optional<google::protobuf::Any> resource;
+    absl::optional<google::protobuf_inworld::Any> resource;
     // The resource type version that this resource was last updated in.
     int resource_type_version = 0;
     // A list of subscriptions to this resource.

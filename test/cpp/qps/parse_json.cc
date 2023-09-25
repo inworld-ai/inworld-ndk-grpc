@@ -27,9 +27,9 @@ namespace testing {
 
 void ParseJson(const std::string& json, const std::string& type,
                GRPC_CUSTOM_MESSAGE* msg) {
-  std::unique_ptr<protobuf::json::TypeResolver> type_resolver(
-      protobuf::json::NewTypeResolverForDescriptorPool(
-          "type.googleapis.com", protobuf::DescriptorPool::generated_pool()));
+  std::unique_ptr<protobuf_inworld::json::TypeResolver> type_resolver(
+      protobuf_inworld::json::NewTypeResolverForDescriptorPool(
+          "type.googleapis.com", protobuf_inworld::DescriptorPool::generated_pool()));
   std::string binary;
   auto status = JsonToBinaryString(
       type_resolver.get(), "type.googleapis.com/" + type, json, &binary);
@@ -45,9 +45,9 @@ void ParseJson(const std::string& json, const std::string& type,
 
 std::string SerializeJson(const GRPC_CUSTOM_MESSAGE& msg,
                           const std::string& type) {
-  std::unique_ptr<protobuf::json::TypeResolver> type_resolver(
-      protobuf::json::NewTypeResolverForDescriptorPool(
-          "type.googleapis.com", protobuf::DescriptorPool::generated_pool()));
+  std::unique_ptr<protobuf_inworld::json::TypeResolver> type_resolver(
+      protobuf_inworld::json::NewTypeResolverForDescriptorPool(
+          "type.googleapis.com", protobuf_inworld::DescriptorPool::generated_pool()));
   std::string binary;
   std::string json_string;
   msg.SerializeToString(&binary);
